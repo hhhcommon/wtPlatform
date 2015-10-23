@@ -1,0 +1,13 @@
+﻿.settings
+/.settings
+/.project
+/target
+
+
+/bak
+/test
+/WebContent/log
+/WebContent/checkCodeImges
+/WebContent/WEB-INF/lib
+/WebContent/WEB-INF/classes
+/WebContent/test.html
