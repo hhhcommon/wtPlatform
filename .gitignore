@@ -3,7 +3,7 @@
 /.project
 /target
 
-
+*.bak
 /bak
 /test
 /WebContent/log
@@ -11,3 +11,5 @@
 /WebContent/WEB-INF/lib
 /WebContent/WEB-INF/classes
 /WebContent/test.html
+/WebContent/test.jsp
+/WebContent/test.jsp
