@@ -25,10 +25,20 @@ public class MobileUsedService {
      * @param mu
      */
     public void saveMobileUsed(MobileUsed mu) {
-        int i = muDao.update("updateByIMEI", mu.getImei());
-        if (i<1) {
+        try {
             mu.setMuId(SequenceUUID.getUUIDSubSegment(4));
             muDao.insert(mu);
+        } catch(Exception e) {
+            e.printStackTrace();
+            muDao.update("updateByIMEI", mu);
         }
+    }
+
+    /**
+     * 根据手机串号，获取最后使用情况
+     * @param imei 手机串号
+     */
+    public MobileUsed getUsedInfo(String imei) {
+        return muDao.getInfoObject("getUsedInfo", imei);
     }
 }

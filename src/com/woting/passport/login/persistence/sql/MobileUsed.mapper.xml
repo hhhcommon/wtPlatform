@@ -51,7 +51,8 @@
   </select>
 
   <!-- 新增数据 -->
-  <insert id="insert" parameterType="java.util.Map">insert into plat_U_MobileUsed
+  <insert id="insert" parameterType="java.util.Map">
+    insert into plat_U_MobileUsed
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="muId!=null">id,</if>
       <if test="imei!=null">imei,</if>

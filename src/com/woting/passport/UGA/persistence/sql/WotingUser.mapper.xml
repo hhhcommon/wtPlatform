@@ -58,7 +58,7 @@
   <select id="getInfo" resultMap="userMap" parameterType="java.util.Map">
     select <include refid="Base_Column_List"/> from plat_user <if test="_parameter=null"><include refid="WhereClauseByEntiey"/></if>
   </select>
-  <select id="getInfoById" resultMap="userMap" parameterType="java.lang.String">
+  <select id="getUserById" resultMap="userMap" parameterType="java.lang.String">
     select <include refid="Base_Column_List"/> from plat_user where id=#{userId,jdbcType=VARCHAR}
   </select>
   <select id="getUserByLoginName" resultMap="userMap" parameterType="java.lang.String">

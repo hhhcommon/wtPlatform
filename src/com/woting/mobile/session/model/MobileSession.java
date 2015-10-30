@@ -57,7 +57,7 @@ public class MobileSession implements Serializable {
     }
 
     /**
-     * 增加一个树形
+     * 增加一个属性
      */
     public void addAttribute(String key, Object value) {
         this.body.put(key, value);
@@ -70,4 +70,10 @@ public class MobileSession implements Serializable {
         return this.body.get(key);
     }
 
+    /**
+     * 清除会话数据体
+     */
+    public void clearBody() {
+        this.body.clear();
+    }
 }

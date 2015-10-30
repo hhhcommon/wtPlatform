@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import com.spiritdata.framework.util.StringUtils;
 import com.woting.mobile.session.model.MobileSession;
 import com.woting.mobile.session.model.SessionKey;
+import com.woting.passport.UGA.persistence.pojo.User;
 
 /**
  * 会话管理类，也就是会话的服务类
@@ -73,9 +74,31 @@ public class SessionMemoryManage {
     /**
      * 得到SessionKey对应的Session
      * @param sk Session的key
-     * @return 对应的Session
+     * @return 对应的Session，若没有或者过期，返回null
      */
     public MobileSession getSession(SessionKey sk) {
-        return this.sm.mSessionMap.get(sk);
+        MobileSession ms=this.sm.mSessionMap.get(sk);
+        if (ms!=null&&ms.expired()) return null;
+        return ms;
+    }
+
+    /**
+     * 根据Imei和userId获得
+     * @param userId 用户Id
+     * @param imei 手机串号
+     * @return 对应的Session
+     */
+    public MobileSession getUserSession(String userId, String imei) {
+        if (StringUtils.isNullOrEmptyOrSpace(userId)||StringUtils.isNullOrEmptyOrSpace(imei)) return null;
+        if (this.sm.mSessionMap!=null&&this.sm.mSessionMap.size()>0) {
+            for (SessionKey sKey: this.sm.mSessionMap.keySet()) {
+                if (sKey.getMobileId().equals(imei)) {
+                    MobileSession ms = this.sm.mSessionMap.get(sKey);
+                    User u = (User)ms.getAttribute("user");
+                    if (u!=null&&u.getUserId().equals(userId)&&!ms.expired()) return ms;
+                }
+            }
+        }
+        return null;
     }
 }
