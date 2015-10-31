@@ -5,10 +5,12 @@
   <!-- 别名设置 -->
   <typeAliases>
     <typeAlias alias="WtUser" type="com.woting.passport.UGA.persistence.pojo.User"/>
+    <typeAlias alias="WtGroup" type="com.woting.passport.UGA.persistence.pojo.Group"/>
     <typeAlias alias="MobileUsed" type="com.woting.passport.login.persistence.pojo.MobileUsed"/>
   </typeAliases>
   <mappers>
     <mapper resource="com/woting/passport/UGA/persistence/sql/WotingUser.mapper.xml"/>
+    <mapper resource="com/woting/passport/UGA/persistence/sql/Group.mapper.xml"/>
     <mapper resource="com/woting/passport/login/persistence/sql/MobileUsed.mapper.xml"/>
   </mappers>
 </configuration>

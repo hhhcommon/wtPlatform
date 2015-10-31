@@ -46,6 +46,7 @@ public class MobileSession implements Serializable {
      * 访问会话
      */
     public void access() {
+        this.expiring=false;
         this.lastAccessedTime=System.currentTimeMillis();
     }
 

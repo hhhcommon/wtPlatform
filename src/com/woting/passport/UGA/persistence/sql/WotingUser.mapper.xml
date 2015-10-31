@@ -5,7 +5,7 @@
 <mapper namespace="WT_USER">
   <!-- 对象定义:用户信息 -->
   <resultMap id="userMap" type="WtUser">
-    <id      column="Id"            property="userId"        jdbcType="VARCHAR"/>
+    <id      column="id"            property="userId"        jdbcType="VARCHAR"/>
     <result  column="loginName"     property="loginName"     jdbcType="VARCHAR"/>
     <result  column="userName"      property="userName"      jdbcType="VARCHAR"/>
     <result  column="password"      property="password"      jdbcType="VARCHAR"/>
@@ -44,29 +44,29 @@
 
   <!-- 获得记录条数-->
   <select id="count" parameterType="java.util.Map" resultType="java.lang.Integer">
-    select count(*) from plat_user <if test="_parameter=null"><include refid="WhereClauseByEntiey"/></if>
+    select count(*) from plat_User <if test="_parameter=null"><include refid="WhereClauseByEntiey"/></if>
   </select>
 
   <!-- 获得列表 -->
   <select id="getList" resultMap="userMap" parameterType="java.util.Map">
-    select <include refid="Base_Column_List"/> from plat_user
+    select <include refid="Base_Column_List"/> from plat_User
     <if test="_parameter=null"><include refid="WhereClauseByEntiey"/></if>
     <if test="orderByClause!=null">order by ${orderByClause}</if>
   </select>
 
   <!-- 获得一条数据 -->
   <select id="getInfo" resultMap="userMap" parameterType="java.util.Map">
-    select <include refid="Base_Column_List"/> from plat_user <if test="_parameter=null"><include refid="WhereClauseByEntiey"/></if>
+    select <include refid="Base_Column_List"/> from plat_User <if test="_parameter=null"><include refid="WhereClauseByEntiey"/></if>
   </select>
   <select id="getUserById" resultMap="userMap" parameterType="java.lang.String">
-    select <include refid="Base_Column_List"/> from plat_user where id=#{userId,jdbcType=VARCHAR}
+    select <include refid="Base_Column_List"/> from plat_User where id=#{userId,jdbcType=VARCHAR}
   </select>
   <select id="getUserByLoginName" resultMap="userMap" parameterType="java.lang.String">
-    select * from plat_user where loginName=#{loginName,jdbcType=VARCHAR}
+    select * from plat_User where loginName=#{loginName,jdbcType=VARCHAR}
   </select>
 
   <!-- 新增数据 -->
-  <insert id="insertUser" parameterType="java.util.Map"> insert into plat_user
+  <insert id="insertUser" parameterType="java.util.Map"> insert into plat_User
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="userId!=null">id,</if>
       <if test="loginName!=null">loginName,</if>
@@ -94,25 +94,26 @@
   </insert>
 
   <!-- 修改 根据主键-->
-  <update id="update" parameterType="java.util.Map">update userMap
+  <update id="update" parameterType="java.util.Map">update plat_User
     <set>
-      <if test="loginName!=null">loginName=#{loginName,jdbcType=VARCHAR}</if>
-      <if test="userName!=null">userName=#{userName,jdbcType=VARCHAR}</if>
-      <if test="password!=null">password=#{password,jdbcType=VARCHAR}</if>
-      <if test="mainPhoneNum!=null">mainPhoneNum=#{mainPhoneNum,jdbcType=VARCHAR}</if>
-      <if test="mailAdress!=null">mainPhoneNum=#{mainPhoneNum,jdbcType=VARCHAR}</if>
-      <if test="userType!=null and userType!=0">userType=#{userType,jdbcType=INTEGER}</if>
-      <if test="userState!=null">userState=#{userState,jdbcType=INTEGER}</if>
-      <if test="descn!=null">descn=#{descn,jdbcType=VARCHAR}</if>
-      <if test="CTime!=null">cTime=#{CTime,jdbcType=TIMESTAMP}</if>
-    </set> where id=#{userId,jdbcType=VARCHAR}
+      <if test="loginName!=null">loginName=#{loginName,jdbcType=VARCHAR},</if>
+      <if test="userName!=null">userName=#{userName,jdbcType=VARCHAR},</if>
+      <if test="password!=null">password=#{password,jdbcType=VARCHAR},</if>
+      <if test="mainPhoneNum!=null">mainPhoneNum=#{mainPhoneNum,jdbcType=VARCHAR},</if>
+      <if test="mailAdress!=null">mainPhoneNum=#{mainPhoneNum,jdbcType=VARCHAR},</if>
+      <if test="userType!=null and userType!=0">userType=#{userType,jdbcType=INTEGER},</if>
+      <if test="userState!=null">userState=#{userState,jdbcType=INTEGER},</if>
+      <if test="descn!=null">descn=#{descn,jdbcType=VARCHAR},</if>
+      <if test="CTime!=null">cTime=#{CTime,jdbcType=TIMESTAMP},</if>
+    </set>
+    where id=#{userId,jdbcType=VARCHAR}
   </update>
 
   <!-- 删除数据 -->
   <delete id="delete" parameterType="java.lang.String">
-    delete from userMap where id=#{userId,jdbcType=VARCHAR}
+    delete from plat_User where id=#{userId,jdbcType=VARCHAR}
   </delete>
   <delete id="deleteByEntity" parameterType="java.util.Map">
-    delete from userMap <if test="_parameter=null"><include refid="WhereClauseByEntiey"/></if>
+    delete from plat_User <if test="_parameter=null"><include refid="WhereClauseByEntiey"/></if>
   </delete>
 </mapper>

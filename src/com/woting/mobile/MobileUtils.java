@@ -43,12 +43,12 @@ public abstract class MobileUtils {
     public static MobileParam getMobileParam(Map<String, Object> m) {
         if (m==null||m.size()==0) return null;
         MobileParam mp = new MobileParam();
-        mp.setImei(m.get("IMEI")+"");
-        mp.setMType(m.get("MobileType")+"");
-        mp.setGps(m.get("GPS")+"");
-        mp.setScreenSize(m.get("ScreenSize")+"");
-        mp.setSessionId(m.get("SessionId")+"");
-        mp.setMachine(m.get("Machine")+"");
+        mp.setImei((String)m.get("IMEI"));
+        mp.setMType((String)m.get("MobileType"));
+        mp.setGps((String)m.get("GPS"));
+        mp.setScreenSize((String)m.get("ScreenSize"));
+        mp.setSessionId((String)m.get("SessionId"));
+        mp.setMachine((String)m.get("Machine"));
 
         if (StringUtils.isNullOrEmptyOrSpace(mp.getMType())&&
             StringUtils.isNullOrEmptyOrSpace(mp.getMType())&&

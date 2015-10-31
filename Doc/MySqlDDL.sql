@@ -38,7 +38,7 @@ ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='手机用户使用';
 /**003 PLAT_GROUP（用户组）*/
 DROP TABLE IF EXISTS plat_Group;
 CREATE TABLE plat_Group (
-  groupId       varchar(32)      NOT NULL                COMMENT 'uuid（用户组id）',
+  id            varchar(32)      NOT NULL                COMMENT 'uuid（用户组id）',
   groupName     varchar(100)     NOT NULL                COMMENT '组名称',
   groupImg      varchar(200)                             COMMENT '用户组头像，是指向头像的URL',
   pId           varchar(32)      NOT NULL                COMMENT '上级用户组名称，默认0，为根',
@@ -48,7 +48,7 @@ CREATE TABLE plat_Group (
   descn         varchar(2000)              DEFAULT NULL  COMMENT '备注',
   cTime         timestamp        NOT NULL  DEFAULT CURRENT_TIMESTAMP  COMMENT '创建时间:创建时的系统时间',
   lmTime        timestamp        NOT NULL  DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  COMMENT '最后修改：每次更新的时间',
-  PRIMARY KEY(groupId)
+  PRIMARY KEY(id)
 )
 ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户组表';
 /** 目前和树型组相关的字段pId, sort没有用 */

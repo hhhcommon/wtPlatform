@@ -1,8 +1,11 @@
 package com.woting.passport.UGA.persistence.pojo;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.spiritdata.framework.UGA.UgaUser;
+import com.spiritdata.framework.util.StringUtils;
 
 public class User extends UgaUser {
     private static final long serialVersionUID = 400373602903981461L;
@@ -56,5 +59,16 @@ public class User extends UgaUser {
     }
     public void setLmTime(Timestamp lmTime) {
         this.lmTime = lmTime;
+    }
+
+    public Map<String, Object> toHashMap4Mobile() {
+        Map<String, Object> retM = new HashMap<String, Object>();
+        if (!StringUtils.isNullOrEmptyOrSpace(this.userId)) retM.put("UserId", this.userId);
+        if (!StringUtils.isNullOrEmptyOrSpace(this.userName)) retM.put("RealName", this.userName);
+        if (!StringUtils.isNullOrEmptyOrSpace(this.loginName)) retM.put("UserName", this.loginName);
+        if (!StringUtils.isNullOrEmptyOrSpace(this.mainPhoneNum)) retM.put("PhoneNum", this.mainPhoneNum);
+        if (!StringUtils.isNullOrEmptyOrSpace(this.mailAdress)) retM.put("Email", this.mailAdress);
+        if (!StringUtils.isNullOrEmptyOrSpace(this.descn)) retM.put("Descript", this.descn);
+        return retM;
     }
 }

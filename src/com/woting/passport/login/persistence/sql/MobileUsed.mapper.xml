@@ -14,7 +14,7 @@
 
   <!-- 所有列 -->
   <sql id="Base_Column_List">
-    id, imei, userId, userId, lmTime
+    id, imei, userId, status, lmTime
   </sql>
 
   <!-- 条件子句 -->
@@ -48,6 +48,9 @@
   </select>
   <select id="getInfoById" resultMap="BaseResultMap" parameterType="java.lang.String">
     select <include refid="Base_Column_List"/> from plat_U_MobileUsed where id=#{id,jdbcType=VARCHAR}
+  </select>
+  <select id="getUsedInfo" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select <include refid="Base_Column_List"/> from plat_U_MobileUsed where imei=#{imei,jdbcType=VARCHAR}
   </select>
 
   <!-- 新增数据 -->

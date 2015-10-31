@@ -7,11 +7,11 @@ import com.woting.mobile.session.model.SessionKey;
 /**
  * 移动端公共参数，包括：<br/>
  * <pre>
- *   mType:设备型号;
- *   imei:设备串号;
- *   gps:GPS信息;
- *   screenSize:屏幕尺寸;
- *   sessionId:会话ID;Web应用用到
+ * mType:设备型号;
+ * imei:设备串号;
+ * gps:GPS信息;
+ * screenSize:屏幕尺寸;
+ * sessionId:会话ID;Web应用用到
  * </pre>
  * @author wh
  */

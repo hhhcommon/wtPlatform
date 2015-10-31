@@ -1,5 +1,7 @@
 package com.woting.passport.UGA.service;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
@@ -70,5 +72,35 @@ public class UserService implements UgaUserService {
             e.printStackTrace();
         }
         return i;
+    }
+
+    /**
+     * 获得好友列表
+     * @param userId 用户id
+     * @return 好友列表
+     */
+    public List<User> getFriendList(String userId) {
+        try {
+            List<User> ul=userDao.queryForList();
+            return ul;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 获得组成员，为创建用户组使用
+     * @param Members 组成员id，用逗号隔开
+     * @return 组成员类表
+     */
+    public List<User> getMembers4BuildGroup(String members) {
+        try {
+            List<User> ul=userDao.queryForList("get");
+            return ul;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
