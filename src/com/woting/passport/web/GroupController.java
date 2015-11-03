@@ -19,6 +19,7 @@ import com.woting.mobile.model.MobileParam;
 import com.woting.mobile.session.mem.SessionMemoryManage;
 import com.woting.mobile.session.model.MobileSession;
 import com.woting.mobile.session.model.SessionKey;
+import com.woting.passport.UGA.persistence.pojo.Group;
 import com.woting.passport.UGA.persistence.pojo.User;
 import com.woting.passport.UGA.service.GroupService;
 import com.woting.passport.UGA.service.UserService;
@@ -63,8 +64,8 @@ public class GroupController {
                 } else {
                     ms.access();
                     if (StringUtils.isNullOrEmptyOrSpace(creator)) {
-                        User u = (User)ms.getAttribute("user");
-                        if (u!=null) creator = u.getUserId();
+                        User u=(User)ms.getAttribute("user");
+                        if (u!=null) creator=u.getUserId();
                     }
                 }
             }
@@ -73,13 +74,41 @@ public class GroupController {
                 map.put("Message", "无法得到创建者");
             } else {
                 //创建用户组
-                String members = (String)m.get("Menbers");
-                if (StringUtils.isNullOrEmptyOrSpace(creator)) {
+                String members=(String)m.get("Members");
+                if (StringUtils.isNullOrEmptyOrSpace(members)) {
                     map.put("ReturnType", "1002");
                     map.put("Message", "无法得到组员信息");
                 } else {
                     members=creator+","+members;
-                    
+                    String[] mArray=members.split(",");
+                    members="";
+                    for (int i=0; i<mArray.length;i++) {
+                        members+=",'"+mArray[i].trim()+"'";
+                    }
+                    List<User> ml=userService.getMembers4BuildGroup(members.substring(1));
+                    if (ml==null||ml.size()==0) {
+                        map.put("ReturnType", "1002");
+                        map.put("Message", "给定的组员信息不存在");
+                    } else if (ml.size()==1) {
+                        map.put("ReturnType", "1002");
+                        map.put("Message", "只有一个有效成员，无法构建用户组");
+                    } else {
+                        //得到组名
+                        String groupName=(String)m.get("GroupName");
+                        if (StringUtils.isNullOrEmptyOrSpace(groupName)) {
+                            groupName="";
+                            for (User u:ml) {
+                                groupName+=","+u.getUserId();
+                            }
+                            groupName=groupName.substring(1);
+                        }
+                        //创建组
+                        Group g=new Group();
+                        g.setCreateUserId(creator);
+                        g.setGroupName(groupName);
+                        g.setGroupUsers(ml);
+                        groupService.insertGroup(g);
+                    }
                 }
             }
             return map;
@@ -108,20 +137,20 @@ public class GroupController {
             }
             MobileParam mp=MobileUtils.getMobileParam(m);
 
-            List<Map<String, Object>> gl = new ArrayList<Map<String, Object>>();
-            Map<String, Object> g = new HashMap<String, Object>();
+            List<Map<String, Object>> gl=new ArrayList<Map<String, Object>>();
+            Map<String, Object> g=new HashMap<String, Object>();
             g.put("GroupId", "123456");
             g.put("GroupName", "用户组1");
             g.put("GroupCount", "3");
             g.put("GroupImg", "images/group.png");
             gl.add(g);
-            g = new HashMap<String, Object>();
+            g=new HashMap<String, Object>();
             g.put("GroupId", "334455");
             g.put("GroupName", "用户组2");
             g.put("GroupCount", "4");
             g.put("GroupImg", "images/group.png");
             gl.add(g);
-            g = new HashMap<String, Object>();
+            g=new HashMap<String, Object>();
             g.put("GroupId", "334466");
             g.put("GroupName", "用户组3");
             g.put("GroupCount", "7");
@@ -155,23 +184,23 @@ public class GroupController {
             }
             MobileParam mp=MobileUtils.getMobileParam(m);
 
-            List<Map<String, Object>> ul = new ArrayList<Map<String, Object>>();
-            Map<String, Object> u = new HashMap<String, Object>();
+            List<Map<String, Object>> ul=new ArrayList<Map<String, Object>>();
+            Map<String, Object> u=new HashMap<String, Object>();
             u.put("UserId", "123456");
             u.put("UserName", "张先生1");
             u.put("Portrait", "images/person.png");
             ul.add(u);
-            u = new HashMap<String, Object>();
+            u=new HashMap<String, Object>();
             u.put("UserId", "334455");
             u.put("UserName", "张先生2");
             u.put("Portrait", "images/person.png");
             ul.add(u);
-            u = new HashMap<String, Object>();
+            u=new HashMap<String, Object>();
             u.put("UserId", "336655");
             u.put("UserName", "张先生3");
             u.put("Portrait", "images/person.png");
             ul.add(u);
-            u = new HashMap<String, Object>();
+            u=new HashMap<String, Object>();
             u.put("UserId", "333sd5");
             u.put("UserName", "张先生4");
             u.put("Portrait", "images/person.png");

@@ -96,7 +96,7 @@ public class UserService implements UgaUserService {
      */
     public List<User> getMembers4BuildGroup(String members) {
         try {
-            List<User> ul=userDao.queryForList("get");
+            List<User> ul=userDao.queryForList("getMembers", members);
             return ul;
         } catch (Exception e) {
             e.printStackTrace();

@@ -64,6 +64,9 @@
   <select id="getUserByLoginName" resultMap="userMap" parameterType="java.lang.String">
     select * from plat_User where loginName=#{loginName,jdbcType=VARCHAR}
   </select>
+  <select id="getMembers" resultMap="userMap" parameterType="java.lang.String">
+    select * from plat_User where id in (${value})
+  </select>
 
   <!-- 新增数据 -->
   <insert id="insertUser" parameterType="java.util.Map"> insert into plat_User

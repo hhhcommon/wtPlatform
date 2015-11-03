@@ -17,6 +17,15 @@
     <result  column="lmTime"        property="lmTime"        jdbcType="TIMESTAMP"/>
   </resultMap>
 
+  <!-- 对象定义:用户信息 -->
+  <resultMap id="groupUserMap" type="WtGroupUser">
+    <id      column="id"       property="id"       jdbcType="VARCHAR"/>
+    <result  column="groupId"  property="groupId"  jdbcType="VARCHAR"/>
+    <result  column="userId"   property="userId"   jdbcType="VARCHAR"/>
+    <result  column="inviter"  property="inviter"  jdbcType="VARCHAR"/>
+    <result  column="cTime"    property="CTime"    jdbcType="TIMESTAMP"/>
+  </resultMap>
+
   <!-- 所有列 -->
   <sql id="Base_Column_List">
     id, groupName, groupImg, pId, sort, createUserId, adminUserId, descn, cTime, lmTime
@@ -71,7 +80,6 @@
       <if test="createUserId!=null">createUserId,</if>
       <if test="adminUserId!=null">adminUserId,</if>
       <if test="descn!=null">descn,</if>
-      <if test="CTime!=null">cTime,</if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="groupId!=null">#{groupId,jdbcType=VARCHAR},</if>
@@ -82,7 +90,6 @@
       <if test="createUserId!=null">#{createUserId,jdbcType=VARCHAR},</if>
       <if test="adminUserId!=null">#{adminUserId,jdbcType=VARCHAR},</if>
       <if test="descn!=null">#{descn,jdbcType=VARCHAR},</if>
-      <if test="CTime!=null">#{CTime,jdbcType=TIMESTAMP},</if>
     </trim>
   </insert>
 
@@ -110,4 +117,21 @@
   <delete id="deleteByEntity" parameterType="java.util.Map">
     delete from plat_Group <if test="_parameter=null"><include refid="WhereClauseByEntiey"/></if>
   </delete>
+
+  <!-- 新增数据 -->
+  <insert id="insertGroupUser" parameterType="java.util.Map">
+    insert into plat_GroupUser
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id!=null">id,</if>
+      <if test="groupId!=null">groupId,</if>
+      <if test="userId!=null">userId,</if>
+      <if test="inviter!=null">inviter,</if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id!=null">#{id,jdbcType=VARCHAR},</if>
+      <if test="groupId!=null">#{groupId,jdbcType=VARCHAR},</if>
+      <if test="userId!=null">#{userId,jdbcType=VARCHAR},</if>
+      <if test="inviter!=null">#{inviter,jdbcType=VARCHAR},</if>
+    </trim>
+  </insert>
 </mapper>
