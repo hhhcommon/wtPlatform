@@ -87,4 +87,13 @@ public class Group extends BaseObject {
     public void setGroupUsers(List<User> groupUsers) {
         this.groupUsers = groupUsers;
     }
+
+    /* 以下属性不在数据库表中明显出现*/
+    private int groupCount; //组用户个数
+    public int getGroupCount() {
+        return groupCount;
+    }
+    public void setGroupCount(int groupCount) {
+        this.groupCount = groupCount;
+    }
 }

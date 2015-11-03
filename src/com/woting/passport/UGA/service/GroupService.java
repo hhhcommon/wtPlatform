@@ -13,29 +13,14 @@ import com.spiritdata.framework.util.SequenceUUID;
 
 public class GroupService {
     @Resource(name="defaultDAO")
+    private MybatisDAO<User> userDao;
+    @Resource(name="defaultDAO")
     private MybatisDAO<Group> groupDao;
 
     @PostConstruct
     public void initParam() {
+        userDao.setNamespace("WT_USER");
         groupDao.setNamespace("WT_GROUP");
-    }
-
-    public Group getUserByLoginName(String loginName) {
-        try {
-            return groupDao.getInfoObject("getUserByLoginName", loginName);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public Group getUserById(String userId) {
-        try {
-            return groupDao.getInfoObject("getUserById", userId);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     /**
@@ -97,15 +82,18 @@ public class GroupService {
         return i;
     }
 
-    /**
-     * 
-     * @param userId
-     * @return
-     */
-    public List<Group> getFriendList(String userId) {
+    public List<Group> getGroupsByUserId(String userId) {
         try {
-            List<Group> ul=groupDao.queryForList();
-            return ul;
+            return groupDao.queryForList("getGroupListByUserId", userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<User> getGroupMembers(String groupId) {
+        try {
+            return userDao.queryForList("getGroupListByUserId", groupId);
         } catch (Exception e) {
             e.printStackTrace();
         }

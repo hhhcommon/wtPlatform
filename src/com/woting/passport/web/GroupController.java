@@ -108,6 +108,8 @@ public class GroupController {
                         g.setGroupName(groupName);
                         g.setGroupUsers(ml);
                         groupService.insertGroup(g);
+                        map.put("ReturnType", "1001");
+                        map.put("GroupName", groupName);
                     }
                 }
             }
@@ -136,29 +138,47 @@ public class GroupController {
                 return map;
             }
             MobileParam mp=MobileUtils.getMobileParam(m);
-
-            List<Map<String, Object>> gl=new ArrayList<Map<String, Object>>();
-            Map<String, Object> g=new HashMap<String, Object>();
-            g.put("GroupId", "123456");
-            g.put("GroupName", "用户组1");
-            g.put("GroupCount", "3");
-            g.put("GroupImg", "images/group.png");
-            gl.add(g);
-            g=new HashMap<String, Object>();
-            g.put("GroupId", "334455");
-            g.put("GroupName", "用户组2");
-            g.put("GroupCount", "4");
-            g.put("GroupImg", "images/group.png");
-            gl.add(g);
-            g=new HashMap<String, Object>();
-            g.put("GroupId", "334466");
-            g.put("GroupName", "用户组3");
-            g.put("GroupCount", "7");
-            g.put("GroupImg", "images/group.png");
-            gl.add(g);
-            map.put("ReturnType", "1001");
-            map.put("SessionId", SequenceUUID.getUUIDSubSegment(4));
-            map.put("GroupList", gl);
+            SessionKey sk=(mp==null?null:mp.getSessionKey());
+            String sessionId=(mp==null?null:mp.getSessionId());
+            sessionId=(sessionId==null?SequenceUUID.getUUIDSubSegment(4):sessionId);
+            map.put("SessionId", sessionId);
+            //1-得到创建者
+            String userId=(String)m.get("userId");
+            if (sk!=null) {
+                sk.setSessionId(sessionId);
+                MobileSession ms=smm.getSession(sk);
+                if (ms==null) {
+                    ms=new MobileSession(sk);
+                    smm.addOneSession(ms);
+                } else {
+                    ms.access();
+                    if (StringUtils.isNullOrEmptyOrSpace(userId)) {
+                        User u=(User)ms.getAttribute("user");
+                        if (u!=null) userId=u.getUserId();
+                    }
+                }
+            }
+            //2-得到用户组
+            if (StringUtils.isNullOrEmptyOrSpace(userId)) {
+                map.put("ReturnType", "1002");
+                map.put("Message", "由于无法获取用户信息，所以无法得到用户组列表");
+            } else {
+                List<Group> gl=groupService.getGroupsByUserId(userId);
+                List<Map<String, Object>> rgl=new ArrayList<Map<String, Object>>();
+                if (gl!=null&&gl.size()>0) {
+                    Map<String, Object> gm;
+                    for (Group g:gl) {
+                        gm=new HashMap<String, Object>();
+                        gm.put("GroupId", g.getGroupId());
+                        gm.put("GroupName", g.getGroupName());
+                        gm.put("GroupCount", g.getGroupCount());
+                        gm.put("GroupImg", "images/group.png");
+                        rgl.add(gm);
+                    }
+                }
+                map.put("ReturnType", "1001");
+                map.put("GroupList", rgl);
+            }
             return map;
         } catch(Exception e) {
             map.put("ReturnType", "T");
@@ -183,36 +203,56 @@ public class GroupController {
                 return map;
             }
             MobileParam mp=MobileUtils.getMobileParam(m);
-
-            List<Map<String, Object>> ul=new ArrayList<Map<String, Object>>();
-            Map<String, Object> u=new HashMap<String, Object>();
-            u.put("UserId", "123456");
-            u.put("UserName", "张先生1");
-            u.put("Portrait", "images/person.png");
-            ul.add(u);
-            u=new HashMap<String, Object>();
-            u.put("UserId", "334455");
-            u.put("UserName", "张先生2");
-            u.put("Portrait", "images/person.png");
-            ul.add(u);
-            u=new HashMap<String, Object>();
-            u.put("UserId", "336655");
-            u.put("UserName", "张先生3");
-            u.put("Portrait", "images/person.png");
-            ul.add(u);
-            u=new HashMap<String, Object>();
-            u.put("UserId", "333sd5");
-            u.put("UserName", "张先生4");
-            u.put("Portrait", "images/person.png");
-            ul.add(u);
-            map.put("ReturnType", "1001");
-            map.put("SessionId", SequenceUUID.getUUIDSubSegment(4));
-            map.put("UserList", ul);
+            SessionKey sk=(mp==null?null:mp.getSessionKey());
+            String sessionId=(mp==null?null:mp.getSessionId());
+            sessionId=(sessionId==null?SequenceUUID.getUUIDSubSegment(4):sessionId);
+            map.put("SessionId", sessionId);
+            //1-处理Session
+            if (sk!=null) {
+                sk.setSessionId(sessionId);
+                MobileSession ms=smm.getSession(sk);
+                if (ms==null) {
+                    ms=new MobileSession(sk);
+                    smm.addOneSession(ms);
+                } else {
+                    ms.access();
+                }
+            }
+            //2-得到用户组Id
+            String groupId=(String)m.get("GroupId");
+            if (StringUtils.isNullOrEmptyOrSpace(groupId)) {
+                map.put("ReturnType", "1002");
+                map.put("Message", "由于无法获取用户组ID，所以无法得到用户组成员列表");
+            } else {
+                List<Map<String, Object>> rul=new ArrayList<Map<String, Object>>();
+                List<User> ul=groupService.getGroupMembers(groupId);
+                if (ul!=null&&ul.size()>0) {
+                    Map<String, Object> um;
+                    for (User u: ul) {
+                        um=new HashMap<String, Object>();
+                        um.put("UserId", u.getUserId());
+                        um.put("UserName", u.getLoginName());
+                        um.put("Portrait", "images/person.png");
+                        rul.add(um);
+                    }
+                }
+                map.put("ReturnType", "1001");
+                map.put("UserList", rul);
+            }
             return map;
         } catch(Exception e) {
             map.put("ReturnType", "T");
             map.put("SessionId", e.getMessage());
             return map;
         }
+    }
+
+    /**
+     * 获得用户组
+     */
+    @RequestMapping(value="exitGroup.do")
+    @ResponseBody
+    public Map<String,Object> exitGroup(HttpServletRequest request) {
+        return null;
     }
 }
