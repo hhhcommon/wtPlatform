@@ -33,6 +33,7 @@ public class GroupController {
     private UserService userService;
 
     private SessionMemoryManage smm=SessionMemoryManage.getInstance();
+
     /**
      * 创建用户组
      */
@@ -98,7 +99,7 @@ public class GroupController {
                         if (StringUtils.isNullOrEmptyOrSpace(groupName)) {
                             groupName="";
                             for (User u:ml) {
-                                groupName+=","+u.getUserId();
+                                groupName+=","+u.getLoginName();
                             }
                             groupName=groupName.substring(1);
                         }
@@ -143,7 +144,7 @@ public class GroupController {
             sessionId=(sessionId==null?SequenceUUID.getUUIDSubSegment(4):sessionId);
             map.put("SessionId", sessionId);
             //1-得到创建者
-            String userId=(String)m.get("userId");
+            String userId=(String)m.get("UserId");
             if (sk!=null) {
                 sk.setSessionId(sessionId);
                 MobileSession ms=smm.getSession(sk);

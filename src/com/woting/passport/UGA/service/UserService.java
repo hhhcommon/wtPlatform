@@ -9,6 +9,7 @@ import com.woting.passport.UGA.persistence.pojo.User;
 import com.spiritdata.framework.UGA.UgaUserService;
 import com.spiritdata.framework.core.dao.mybatis.MybatisDAO;
 import com.spiritdata.framework.util.SequenceUUID;
+import com.spiritdata.framework.util.StringUtils;
 
 public class UserService implements UgaUserService {
     @Resource(name="defaultDAO")
@@ -49,7 +50,9 @@ public class UserService implements UgaUserService {
     public int insertUser(User user) {
         int i=0;
         try {
-            user.setUserId(SequenceUUID.getUUIDSubSegment(4));
+            if (StringUtils.isNullOrEmptyOrSpace(user.getUserId())) {
+                user.setUserId(SequenceUUID.getUUIDSubSegment(4));
+            }
             userDao.insert("insertUser", user);
             i=1;
         } catch (Exception e) {

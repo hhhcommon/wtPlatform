@@ -233,6 +233,7 @@ public class PassportController {
             //2-保存用户
             nu.setCTime(new Timestamp(System.currentTimeMillis()));
             nu.setUserType(1);
+            nu.setUserId(SequenceUUID.getUUIDSubSegment(4));
             int rflag=userService.insertUser(nu);
             if (rflag!=1) {
                 map.put("ReturnType", "0000");
@@ -256,6 +257,7 @@ public class PassportController {
             }
             //4-没有IMEI，返回成功
             map.put("ReturnType", "1001");
+            map.put("UserId", nu.getUserId());
             return map;
         } catch(Exception e) {
             e.printStackTrace();
@@ -286,7 +288,8 @@ public class PassportController {
             String sessionId=(mp==null?null:mp.getSessionId());
             sessionId=(sessionId==null?SequenceUUID.getUUIDSubSegment(4):sessionId);
             map.put("SessionId", sessionId);
-            //2-处理Session
+            //2-处理Session并获得UserId
+            String userId=(String)m.get("UserId");
             if (sk!=null) {
                 sk.setSessionId(sessionId);
                 MobileSession ms=smm.getSession(sk);
@@ -296,13 +299,18 @@ public class PassportController {
                 } else { //删除掉所有的信息？？？
                     ms.access();
                     ms.clearBody();
+                    if (StringUtils.isNullOrEmptyOrSpace(userId)) {
+                        User u = (User)ms.getAttribute("user");
+                        if (u!=null) userId = u.getUserId();
+                    }
                 }
             }
             //3-保存使用情况
-            if (mp!=null&&!StringUtils.isNullOrEmptyOrSpace(mp.getImei())) {
+            if (mp!=null&&!StringUtils.isNullOrEmptyOrSpace(sk.getMobileId())&&!StringUtils.isNullOrEmptyOrSpace(userId)) {
                 MobileUsed mu=new MobileUsed();
-                mu.setImei(mp.getImei());
+                mu.setImei(sk.getMobileId());
                 mu.setStatus(2);
+                mu.setUserId(userId);
                 muService.saveMobileUsed(mu);
             }
             //4-没有IMEI，返回成功

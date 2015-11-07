@@ -22,6 +22,9 @@
   <sql id="Base_Column_List">
     id, loginName, userName, password, mainPhoneNum, mailAdress, userType, userState, descn, cTime, lmTime
   </sql>
+  <sql id="Base_Column_List_A">
+    a.id, a.loginName, a.userName, a.password, a.mainPhoneNum, a.mailAdress, a.userType, a.userState, a.descn, a.cTime, a.lmTime
+  </sql>
 
   <!-- 条件子句 -->
   <sql id="WhereClauseByEntiey">
@@ -66,6 +69,9 @@
   </select>
   <select id="getMembers" resultMap="userMap" parameterType="java.lang.String">
     select * from plat_User where id in (${value})
+  </select>
+  <select id="getGroupMembers" resultMap="userMap" parameterType="java.lang.String">
+    select <include refid="Base_Column_List_A"/> from plat_User a, plat_GroupUser b where a.id=b.userId and b.groupId=#{value, jdbcType=VARCHAR}
   </select>
 
   <!-- 新增数据 -->

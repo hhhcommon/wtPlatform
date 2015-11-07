@@ -29,8 +29,11 @@ public class MobileUsedService {
             mu.setMuId(SequenceUUID.getUUIDSubSegment(4));
             muDao.insert(mu);
         } catch(Exception e) {
-            e.printStackTrace();
-            muDao.update("updateByIMEI", mu);
+            try {
+                muDao.update("updateByIMEI", mu);
+            } catch(Exception e1) {
+                e1.printStackTrace();
+            }
         }
     }
 

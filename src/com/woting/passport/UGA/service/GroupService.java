@@ -82,6 +82,11 @@ public class GroupService {
         return i;
     }
 
+    /**
+     * 根据用户ID,得到用户组
+     * @param userId
+     * @return 用户组
+     */
     public List<Group> getGroupsByUserId(String userId) {
         try {
             return groupDao.queryForList("getGroupListByUserId", userId);
@@ -91,9 +96,14 @@ public class GroupService {
         return null;
     }
 
+    /**
+     * 获得用户组中的用户
+     * @param groupId 用户组Id
+     * @return 用户组中的用户
+     */
     public List<User> getGroupMembers(String groupId) {
         try {
-            return userDao.queryForList("getGroupListByUserId", groupId);
+            return userDao.queryForList("getGroupMembers", groupId);
         } catch (Exception e) {
             e.printStackTrace();
         }
