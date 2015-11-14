@@ -12,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.spiritdata.framework.util.SequenceUUID;
 import com.spiritdata.framework.util.StringUtils;
 import com.woting.mobile.MobileUtils;
 import com.woting.mobile.model.MobileParam;
@@ -25,7 +24,7 @@ import com.woting.passport.UGA.service.GroupService;
 import com.woting.passport.UGA.service.UserService;
 
 @Controller
-@RequestMapping(value="/group/")
+@RequestMapping(value="/passport/group/")
 public class GroupController {
     @Resource
     private GroupService groupService;
@@ -44,30 +43,31 @@ public class GroupController {
         try {
             //0-获得参数
             Map<String, Object> m=MobileUtils.getDataFromRequest(request);
-            if (m==null) {
+            if (m==null||m.size()==0) {
                 map.put("ReturnType", "0000");
                 map.put("Message", "无法获得需要的参数");
                 return map;
             }
             MobileParam mp=MobileUtils.getMobileParam(m);
             SessionKey sk=(mp==null?null:mp.getSessionKey());
-            String sessionId=(mp==null?null:mp.getSessionId());
-            sessionId=(sessionId==null?SequenceUUID.getUUIDSubSegment(4):sessionId);
-            map.put("SessionId", sessionId);
             //1-得到创建者
             String creator=(String)m.get("Creator");
             if (sk!=null) {
-                sk.setSessionId(sessionId);
+                map.put("SessionId", sk.getSessionId());
                 MobileSession ms=smm.getSession(sk);
                 if (ms==null) {
                     ms=new MobileSession(sk);
                     smm.addOneSession(ms);
                 } else {
-                    ms.access();
                     if (StringUtils.isNullOrEmptyOrSpace(creator)) {
-                        User u=(User)ms.getAttribute("user");
-                        if (u!=null) creator=u.getUserId();
+                        creator=sk.getSessionId();
+                        if (creator.length()==15) {
+                            creator=null;
+                            User u = (User)ms.getAttribute("user");
+                            if (u!=null) creator = u.getUserId();
+                        }
                     }
+                    ms.access();
                 }
             }
             if (StringUtils.isNullOrEmptyOrSpace(creator)) {
@@ -133,36 +133,37 @@ public class GroupController {
         try {
             //0-获得参数
             Map<String, Object> m=MobileUtils.getDataFromRequest(request);
-            if (m==null) {
+            if (m==null||m.size()==0) {
                 map.put("ReturnType", "0000");
                 map.put("Message", "无法获得需要的参数");
                 return map;
             }
             MobileParam mp=MobileUtils.getMobileParam(m);
             SessionKey sk=(mp==null?null:mp.getSessionKey());
-            String sessionId=(mp==null?null:mp.getSessionId());
-            sessionId=(sessionId==null?SequenceUUID.getUUIDSubSegment(4):sessionId);
-            map.put("SessionId", sessionId);
-            //1-得到创建者
+            //1-得到用户Id
             String userId=(String)m.get("UserId");
             if (sk!=null) {
-                sk.setSessionId(sessionId);
+                map.put("SessionId", sk.getSessionId());
                 MobileSession ms=smm.getSession(sk);
                 if (ms==null) {
                     ms=new MobileSession(sk);
                     smm.addOneSession(ms);
                 } else {
-                    ms.access();
                     if (StringUtils.isNullOrEmptyOrSpace(userId)) {
-                        User u=(User)ms.getAttribute("user");
-                        if (u!=null) userId=u.getUserId();
+                        userId=sk.getSessionId();
+                        if (userId.length()==15) {
+                            userId=null;
+                            User u = (User)ms.getAttribute("user");
+                            if (u!=null) userId = u.getUserId();
+                        }
                     }
+                    ms.access();
                 }
             }
             //2-得到用户组
             if (StringUtils.isNullOrEmptyOrSpace(userId)) {
                 map.put("ReturnType", "1002");
-                map.put("Message", "由于无法获取用户信息，所以无法得到用户组列表");
+                map.put("Message", "无法获取用户Id");
             } else {
                 List<Group> gl=groupService.getGroupsByUserId(userId);
                 List<Map<String, Object>> rgl=new ArrayList<Map<String, Object>>();
@@ -189,7 +190,7 @@ public class GroupController {
     }
 
     /**
-     * 获得用户组
+     * 获得组成员列表
      */
     @RequestMapping(value="getGroupMembers.do")
     @ResponseBody
@@ -198,19 +199,16 @@ public class GroupController {
         try {
             //0-获得参数
             Map<String, Object> m=MobileUtils.getDataFromRequest(request);
-            if (m==null) {
+            if (m==null||m.size()==0) {
                 map.put("ReturnType", "0000");
                 map.put("Message", "无法获得需要的参数");
                 return map;
             }
             MobileParam mp=MobileUtils.getMobileParam(m);
             SessionKey sk=(mp==null?null:mp.getSessionKey());
-            String sessionId=(mp==null?null:mp.getSessionId());
-            sessionId=(sessionId==null?SequenceUUID.getUUIDSubSegment(4):sessionId);
-            map.put("SessionId", sessionId);
             //1-处理Session
             if (sk!=null) {
-                sk.setSessionId(sessionId);
+                map.put("SessionId", sk.getSessionId());
                 MobileSession ms=smm.getSession(sk);
                 if (ms==null) {
                     ms=new MobileSession(sk);
@@ -223,7 +221,7 @@ public class GroupController {
             String groupId=(String)m.get("GroupId");
             if (StringUtils.isNullOrEmptyOrSpace(groupId)) {
                 map.put("ReturnType", "1002");
-                map.put("Message", "由于无法获取用户组ID，所以无法得到用户组成员列表");
+                map.put("Message", "无法获取组Id");
             } else {
                 List<Map<String, Object>> rul=new ArrayList<Map<String, Object>>();
                 List<User> ul=groupService.getGroupMembers(groupId);
@@ -236,9 +234,12 @@ public class GroupController {
                         um.put("Portrait", "images/person.png");
                         rul.add(um);
                     }
+                    map.put("ReturnType", "1001");
+                    map.put("UserList", rul);
+                } else {
+                    map.put("ReturnType", "1003");
+                    map.put("Message", "组中无成员");
                 }
-                map.put("ReturnType", "1001");
-                map.put("UserList", rul);
             }
             return map;
         } catch(Exception e) {

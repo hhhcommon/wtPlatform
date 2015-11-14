@@ -2,6 +2,7 @@ package com.woting.mobile.session.mem;
 
 import org.apache.log4j.Logger;
 
+import com.spiritdata.framework.util.JsonUtils;
 import com.spiritdata.framework.util.StringUtils;
 import com.woting.mobile.session.model.MobileSession;
 import com.woting.mobile.session.model.SessionKey;
@@ -77,7 +78,16 @@ public class SessionMemoryManage {
      * @return 对应的Session，若没有或者过期，返回null
      */
     public MobileSession getSession(SessionKey sk) {
-        MobileSession ms=this.sm.mSessionMap.get(sk);
+        if (sk==null) return null;
+        MobileSession ms = null;
+        if (this.sm.mSessionMap!=null&&this.sm.mSessionMap.size()>0) {
+            for (SessionKey sKey: this.sm.mSessionMap.keySet()) {
+                if (sKey.equals(sk)) {
+                    ms=this.sm.mSessionMap.get(sKey);
+                    break;
+                }
+            }
+        }
         if (ms!=null&&ms.expired()) return null;
         return ms;
     }
@@ -100,5 +110,13 @@ public class SessionMemoryManage {
             }
         }
         return null;
+    }
+
+    /**
+     * 把内存情况转换为Json串，便于调试
+     * @return
+     */
+    public String Mem2Json() {
+        return JsonUtils.objToJson(this.sm.mSessionMap);
     }
 }

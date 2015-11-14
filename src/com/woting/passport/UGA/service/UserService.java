@@ -69,7 +69,7 @@ public class UserService implements UgaUserService {
     public int updateUser(User user) {
         int i=0;
         try {
-            userDao.update("updateUser", user);
+            userDao.update(user);
             i=1;
         } catch (Exception e) {
             e.printStackTrace();

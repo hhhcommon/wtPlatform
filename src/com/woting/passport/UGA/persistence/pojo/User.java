@@ -14,6 +14,8 @@ public class User extends UgaUser {
     private String mailAdress; //用户邮箱
     private int userType; //用户分类：1=普通用户;2=编辑用户
     private int userState;//用户状态，0~2
+    private String protraitBig;//用户头像大
+    private String protraitMini;//用户头像小
     private String descn; //用户描述
     private Timestamp CTime; //记录创建时间
     private Timestamp lmTime; //最后修改时间:last modify time
@@ -41,6 +43,18 @@ public class User extends UgaUser {
     }
     public void setUserState(int userState) {
         this.userState = userState;
+    }
+    public String getProtraitBig() {
+        return protraitBig;
+    }
+    public void setProtraitBig(String protraitBig) {
+        this.protraitBig = protraitBig;
+    }
+    public String getProtraitMini() {
+        return protraitMini;
+    }
+    public void setProtraitMini(String protraitMini) {
+        this.protraitMini = protraitMini;
     }
     public String getDescn() {
         return descn;

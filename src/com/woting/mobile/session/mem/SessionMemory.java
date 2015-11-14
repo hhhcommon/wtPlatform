@@ -28,7 +28,7 @@ public class SessionMemory {
      */
     public void init(MobileSessionConfig msc) {
         myConfig=(msc==null?new MobileSessionConfig():msc);
-        mSessionMap = new ConcurrentHashMap<SessionKey, MobileSession>();
+        mSessionMap=new ConcurrentHashMap<SessionKey, MobileSession>();
     }
 
     /**

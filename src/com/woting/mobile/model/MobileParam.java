@@ -21,6 +21,7 @@ public class MobileParam extends BaseObject {
     private String MType;//设备型号
     private String imei;//设备串号
     private String machine;//机器名称
+    private String userId;//用户
     private String gps;//GPS信息
     private String screenSize;//屏幕尺寸
     private String sessionId;//会话ID
@@ -49,6 +50,12 @@ public class MobileParam extends BaseObject {
     public void setGps(String gps) {
         this.gps = gps;
     }
+    public String getUserId() {
+        return userId;
+    }
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
     public String getScreenSize() {
         return screenSize;
     }
@@ -70,7 +77,7 @@ public class MobileParam extends BaseObject {
         if (StringUtils.isNullOrEmptyOrSpace(this.getImei())) return null;
         SessionKey sk = new SessionKey();
         sk.setMobileId(this.imei);
-        sk.setSessionId(this.sessionId);
+        sk.setUserId(this.userId);
         return sk;
     }
 }
