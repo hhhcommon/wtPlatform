@@ -199,6 +199,6 @@ public abstract class MobileUtils {
      */
     public static String getLastVersion() {
         //应该从某一个文件中读取最新的版本号
-        return "1.2.23.A.3344";
+        return "1.2.23.A.3344,2015-11-20";
     }
 }

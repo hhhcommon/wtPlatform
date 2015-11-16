@@ -96,7 +96,6 @@ public class PassportController {
                 }
                 User u = userService.getUserById(mu.getUserId());
                 ms.addAttribute("user", u);
-
                 map.put("ReturnType", "1001"); //已登录
                 map.put("UserInfo", u.toHashMap4Mobile());
             }
@@ -324,7 +323,7 @@ public class PassportController {
      * 绑定用户的其他信息，目前有手机/eMail
      * @throws IOException
      */
-    @RequestMapping(value="bindExtUserInfo.do")
+    @RequestMapping(value="user/bindExtUserInfo.do")
     @ResponseBody
     public Map<String,Object> bindExtUserInfo(HttpServletRequest request) {
         Map<String,Object> map=new HashMap<String, Object>();
@@ -362,7 +361,7 @@ public class PassportController {
             }
             String phoneNum=(String)m.get("PhoneNum");
             String mail=(String)m.get("MailAddr");
-            if (StringUtils.isNullOrEmptyOrSpace(phoneNum)&&StringUtils.isNullOrEmptyOrSpace(mail)) {
+            if (StringUtils.isNullOrEmptyOrSpace(phoneNum)||StringUtils.isNullOrEmptyOrSpace(mail)) {
                 map.put("ReturnType", "1003");
                 map.put("Message", "邮箱或手机号码不能同时为空");
                 return map;
@@ -397,7 +396,7 @@ public class PassportController {
     /**
      * 修改密码
      */
-    @RequestMapping(value="updatePwd.do")
+    @RequestMapping(value="user/updatePwd.do")
     @ResponseBody
     public Map<String,Object> updatePwd(HttpServletRequest request) {
         Map<String,Object> map=new HashMap<String, Object>();
@@ -484,7 +483,7 @@ public class PassportController {
      * 找回密码——通过手机
      * @throws IOException
      */
-    @RequestMapping(value="retrieveByPwd.do")
+    @RequestMapping(value="user/retrieveByPwd.do")
     @ResponseBody
     public Map<String,Object> retrieveByPwd(HttpServletRequest request) {
         System.out.println("===================");
@@ -495,7 +494,7 @@ public class PassportController {
     /**
      * 找回密码——通过邮箱
      */
-    @RequestMapping(value="retrieveByEmail.do")
+    @RequestMapping(value="user/retrieveByEmail.do")
     @ResponseBody
     public Map<String,Object> retrieveByEmail(HttpServletRequest request) {
         System.out.println("===================");
@@ -561,81 +560,12 @@ public class PassportController {
                     map.put("ReturnType", "1001");
                     map.put("UserList", rul);
                 } else {
-                    map.put("ReturnType", "1003");
+                    map.put("ReturnType", "1011");
                     map.put("Message", "没有好友");
                 }
             }
             return map;
         } catch(Exception e) {
-            map.put("ReturnType", "T");
-            map.put("TClass", e.getClass().getName());
-            map.put("Message", e.getMessage());
-            return map;
-        }
-    }
-
-    /**
-     * 保存图片
-     */
-    @RequestMapping(value="uploadImg.do")
-    @ResponseBody
-    public Map<String,Object> uploadImg(HttpServletRequest request) {
-        Map<String,Object> map=new HashMap<String, Object>();
-        try {
-            //0-获取参数
-            Map<String, Object> m=MobileUtils.getDataFromRequestParam(request);
-            if (m==null||m.size()==0) {
-                map.put("ReturnType", "0000");
-                map.put("Message", "无法获取需要的参数");
-                return map;
-            }
-            MobileParam mp=MobileUtils.getMobileParam(m);
-            SessionKey sk=(mp==null?null:mp.getSessionKey());
-            //1-得到用户id
-            String userId=(String)m.get("UserId");
-            User u = null;
-            if (sk!=null) {
-                map.put("SessionId", sk.getSessionId());
-                MobileSession ms=smm.getSession(sk);
-                if (ms!=null) {
-                    if (StringUtils.isNullOrEmptyOrSpace(userId)) {
-                        userId=sk.getSessionId();
-                        if (userId.length()==15) {
-                            userId=null;
-                            u = (User)ms.getAttribute("user");
-                            if (u!=null) userId = u.getUserId();
-                        }
-                    }
-                    ms.access();
-                } else {
-                    ms=new MobileSession(sk);
-                    smm.addOneSession(ms);
-                }
-            }
-            if (StringUtils.isNullOrEmptyOrSpace(userId)) {
-                map.put("ReturnType", "1002");
-                map.put("Message", "无法获取用户Id，不能保存图片");
-            } else {
-                request.getQueryString();
-                Map<String, Object> sfMap=MobileUtils.saveTypePictrue(request, userId);
-                if (sfMap.get("rType").equals("ok")){//成功
-                    //数据库处理：这里保存的是
-                    if (u==null) u=userService.getUserById(userId);
-                    if (u!=null) {
-                        u.setProtraitBig((String)sfMap.get("bigUri"));
-                        u.setProtraitMini((String)sfMap.get("miniUri"));
-                        userService.updateUser(u);
-                    }
-                    map.put("ReturnType", "1001");
-                    map.put("BigUri", (String)sfMap.get("bigUri"));
-                    map.put("MiniUri", (String)sfMap.get("miniUri"));
-                } else {
-                    map.put("ReturnType", "1003");
-                    map.put("Message", sfMap.get("Message"));
-                }
-            }
-            return map;
-        } catch (Exception e) {
             map.put("ReturnType", "T");
             map.put("TClass", e.getClass().getName());
             map.put("Message", e.getMessage());

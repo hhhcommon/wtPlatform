@@ -177,9 +177,12 @@ public class GroupController {
                         gm.put("GroupImg", "images/group.png");
                         rgl.add(gm);
                     }
+                    map.put("ReturnType", "1001");
+                    map.put("GroupList", rgl);
+                } else {
+                    map.put("ReturnType", "1011");
+                    map.put("Message", "无所属用户组");
                 }
-                map.put("ReturnType", "1001");
-                map.put("GroupList", rgl);
             }
             return map;
         } catch(Exception e) {
@@ -237,7 +240,7 @@ public class GroupController {
                     map.put("ReturnType", "1001");
                     map.put("UserList", rul);
                 } else {
-                    map.put("ReturnType", "1003");
+                    map.put("ReturnType", "1011");
                     map.put("Message", "组中无成员");
                 }
             }
