@@ -37,79 +37,6 @@ public class PassportController {
     private SessionMemoryManage smm=SessionMemoryManage.getInstance();
 
     /**
-     * 进入App
-     * @param request 请求对象。数据包含在Data流中，以json格式存储，其中必须包括手机串号。如：{"imei":"123456789023456789"}
-     * @return 分为如下情况<br/>
-     *   若有异常：{ReturnType:T, TClass:exception.class, Message: e.getMessage()}
-     *   已经登录：{ReturnType:1001, sessionId:sid, userInfo:{userName:un, mphone:138XXXX2345, email:a@b.c, realName:实名, headImg:hiUrl}}
-     *     其中用户信息若没有相关内容，则相关的key:value对就不存在
-     *   还未登录：{ReturnType:1002, sessionId:sid}
-     */
-    @RequestMapping(value="entryApp.do")
-    @ResponseBody
-    public Map<String,Object> entryApp(HttpServletRequest request) {
-        Map<String,Object> map=new HashMap<String, Object>();
-        try {
-            //0-获取参数
-            Map<String, Object> m=MobileUtils.getDataFromRequest(request);
-            if (m==null||m.size()==0) {
-                map.put("ReturnType", "0000");
-                map.put("Message", "无法获取需要的参数");
-                return map;
-            }
-            MobileParam mp=MobileUtils.getMobileParam(m);
-            SessionKey sk=(mp==null?null:mp.getSessionKey());
-            //1-没有IMEI，按未登录处理
-            if (sk==null) {
-                map.put("ReturnType", "0000");
-                map.put("Message", "无法获取需要的参数——手机串号");
-                return map;
-            }
-            smm.expireAllSessionByIMEI(sk.getMobileId()); //作废所有imei对应的Session
-            //2-处理
-            map.put("SessionId", sk.getSessionId());
-            MobileUsed mu = muService.getUsedInfo(sk.getMobileId());
-            MobileSession ms=null;
-            if (mu==null||mu.getStatus()==2) {//上次未登陆
-                boolean canCreateSession=false;
-                if (mu==null) canCreateSession=true;
-                else { //上次是注销
-                    ms=smm.getSession(sk); //看看Session中是否有
-                    if (ms==null) canCreateSession=true;
-                }
-                if (canCreateSession) {
-                    ms=new MobileSession(sk);
-                    smm.addOneSession(ms);
-                } else if (ms!=null) {
-                    ms.access();
-                    ms.clearBody();
-                }
-                map.put("ReturnType", "1002");
-            } else { //上次是登录
-                ms=smm.getUserSession(mu.getUserId(), sk.getMobileId());
-                if (ms==null) { //找不到对应的移动会话
-                    ms=new MobileSession(sk);
-                    smm.addOneSession(ms);
-                    System.out.println(smm.Mem2Json());
-                } else { //找到了对应的对话，直接应用
-                    ms.access();
-                }
-                User u = userService.getUserById(mu.getUserId());
-                ms.addAttribute("user", u);
-                map.put("ReturnType", "1001"); //已登录
-                map.put("UserInfo", u.toHashMap4Mobile());
-            }
-            return map;
-        } catch(Exception e) {
-            e.printStackTrace();
-            map.put("ReturnType", "T");
-            map.put("TClass", e.getClass().getName());
-            map.put("Message", e.getMessage());
-            return map;
-        }
-    }
-
-    /**
      * 用户登录
      * @throws IOException
      */
@@ -361,7 +288,7 @@ public class PassportController {
             }
             String phoneNum=(String)m.get("PhoneNum");
             String mail=(String)m.get("MailAddr");
-            if (StringUtils.isNullOrEmptyOrSpace(phoneNum)||StringUtils.isNullOrEmptyOrSpace(mail)) {
+            if (StringUtils.isNullOrEmptyOrSpace(phoneNum)&&StringUtils.isNullOrEmptyOrSpace(mail)) {
                 map.put("ReturnType", "1003");
                 map.put("Message", "邮箱或手机号码不能同时为空");
                 return map;
@@ -500,77 +427,6 @@ public class PassportController {
         System.out.println("===================");
         //返回登录的情况
         return null;
-    }
-
-    /**
-     * 得到好友列表
-     */
-    @RequestMapping(value="user/getFriendList.do")
-    @ResponseBody
-    public Map<String,Object> getFriendList(HttpServletRequest request) {
-        Map<String,Object> map=new HashMap<String, Object>();
-        try {
-            //0-获取参数
-            Map<String, Object> m=MobileUtils.getDataFromRequest(request);
-            if (m==null||m.size()==0) {
-                map.put("ReturnType", "0000");
-                map.put("Message", "无法获取需要的参数");
-                return map;
-            }
-            MobileParam mp=MobileUtils.getMobileParam(m);
-            SessionKey sk=(mp==null?null:mp.getSessionKey());
-
-            //2-获取UserId
-            String userId=(String)m.get("UserId");
-            if (sk!=null) {
-                map.put("SessionId", sk.getSessionId());
-                MobileSession ms=smm.getSession(sk);
-                if (ms==null) {
-                    ms=new MobileSession(sk);
-                    smm.addOneSession(ms);
-                } else {
-                    if (StringUtils.isNullOrEmptyOrSpace(userId)) {
-                        userId=sk.getSessionId();
-                        if (userId.length()==15) {
-                            userId=null;
-                            User u = (User)ms.getAttribute("user");
-                            if (u!=null) userId = u.getUserId();
-                        }
-                    }
-                    ms.access();
-                }
-            }
-            if (StringUtils.isNullOrEmptyOrSpace(userId)) {
-                map.put("ReturnType", "1002");
-                map.put("Message", "无法获取用户Id");
-            } else {
-                List<User> ul=userService.getFriendList(userId);
-                if (ul!=null&&ul.size()>0) {
-                    List<Map<String, Object>> rul=new ArrayList<Map<String, Object>>();
-                    Map<String, Object> um;
-                    for (User u: ul) {
-                        if (!u.getUserId().equals(userId)) {
-                            um=new HashMap<String, Object>();
-                            um.put("UserId", u.getUserId());
-                            um.put("UserName", u.getLoginName());
-                            um.put("Portrait", "images/person.png");//还要改变！！！
-                            rul.add(um);
-                        }
-                    }
-                    map.put("ReturnType", "1001");
-                    map.put("UserList", rul);
-                } else {
-                    map.put("ReturnType", "1011");
-                    map.put("Message", "没有好友");
-                }
-            }
-            return map;
-        } catch(Exception e) {
-            map.put("ReturnType", "T");
-            map.put("TClass", e.getClass().getName());
-            map.put("Message", e.getMessage());
-            return map;
-        }
     }
 
     /**

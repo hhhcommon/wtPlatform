@@ -22,13 +22,90 @@ import com.woting.mobile.session.model.MobileSession;
 import com.woting.mobile.session.model.SessionKey;
 import com.woting.passport.UGA.persistence.pojo.User;
 import com.woting.passport.UGA.service.UserService;
+import com.woting.passport.login.persistence.pojo.MobileUsed;
+import com.woting.passport.login.service.MobileUsedService;
 
 @Controller
 public class CommonController {
     @Resource
     private UserService userService;
+    @Resource
+    private MobileUsedService muService;
 
     private SessionMemoryManage smm=SessionMemoryManage.getInstance();
+
+    /**
+     * 进入App
+     * @param request 请求对象。数据包含在Data流中，以json格式存储，其中必须包括手机串号。如：{"imei":"123456789023456789"}
+     * @return 分为如下情况<br/>
+     *   若有异常：{ReturnType:T, TClass:exception.class, Message: e.getMessage()}
+     *   已经登录：{ReturnType:1001, sessionId:sid, userInfo:{userName:un, mphone:138XXXX2345, email:a@b.c, realName:实名, headImg:hiUrl}}
+     *     其中用户信息若没有相关内容，则相关的key:value对就不存在
+     *   还未登录：{ReturnType:1002, sessionId:sid}
+     */
+    @RequestMapping(value="/common/entryApp.do")
+    @ResponseBody
+    public Map<String,Object> entryApp(HttpServletRequest request) {
+        Map<String,Object> map=new HashMap<String, Object>();
+        try {
+            //0-获取参数
+            Map<String, Object> m=MobileUtils.getDataFromRequest(request);
+            if (m==null||m.size()==0) {
+                map.put("ReturnType", "0000");
+                map.put("Message", "无法获取需要的参数");
+                return map;
+            }
+            MobileParam mp=MobileUtils.getMobileParam(m);
+            SessionKey sk=(mp==null?null:mp.getSessionKey());
+            //1-没有IMEI，按未登录处理
+            if (sk==null) {
+                map.put("ReturnType", "0000");
+                map.put("Message", "无法获取需要的参数——手机串号");
+                return map;
+            }
+            smm.expireAllSessionByIMEI(sk.getMobileId()); //作废所有imei对应的Session
+            //2-处理
+            map.put("SessionId", sk.getSessionId());
+            MobileUsed mu = muService.getUsedInfo(sk.getMobileId());
+            MobileSession ms=null;
+            if (mu==null||mu.getStatus()==2) {//上次未登陆
+                boolean canCreateSession=false;
+                if (mu==null) canCreateSession=true;
+                else { //上次是注销
+                    ms=smm.getSession(sk); //看看Session中是否有
+                    if (ms==null) canCreateSession=true;
+                }
+                if (canCreateSession) {
+                    ms=new MobileSession(sk);
+                    smm.addOneSession(ms);
+                } else if (ms!=null) {
+                    ms.access();
+                    ms.clearBody();
+                }
+                map.put("ReturnType", "1002");
+            } else { //上次是登录
+                ms=smm.getUserSession(mu.getUserId(), sk.getMobileId());
+                if (ms==null) { //找不到对应的移动会话
+                    ms=new MobileSession(sk);
+                    smm.addOneSession(ms);
+                    System.out.println(smm.Mem2Json());
+                } else { //找到了对应的对话，直接应用
+                    ms.access();
+                }
+                User u = userService.getUserById(mu.getUserId());
+                ms.addAttribute("user", u);
+                map.put("ReturnType", "1001"); //已登录
+                map.put("UserInfo", u.toHashMap4Mobile());
+            }
+            return map;
+        } catch(Exception e) {
+            e.printStackTrace();
+            map.put("ReturnType", "T");
+            map.put("TClass", e.getClass().getName());
+            map.put("Message", e.getMessage());
+            return map;
+        }
+    }
 
     @RequestMapping(value="/common/getVersion.do")
     @ResponseBody
@@ -58,6 +135,9 @@ public class CommonController {
                     map.put("PublishDate", vs[1]);
                 } else {
                     map.put("PublishDate", DateUtils.convert2LocalStr("yyyy-MM-dd", new Date()));
+                }
+                if (vs.length>2) {
+                    map.put("PatchInfo", vs[2]);
                 }
             }
             return map;
@@ -150,10 +230,10 @@ public class CommonController {
             Map<String, Object> media;
             media = new HashMap<String, Object>();
             media.put("MediaType", "RADIO"); //电台
-            media.put("RadioName", "北京交通广播");
+            media.put("RadioName", "CRI 轻松调频");
             media.put("RadioId", "001");
             media.put("RadioImg", "images/dft_broadcast.png");
-            media.put("RadioURI", "mms://a.b.c/aaa.mpg");
+            media.put("RadioURI", "mms://live.cri.cn/en4");
             media.put("CurrentContent", "路况信息");//当前节目
             ml.add(media);
             media = new HashMap<String, Object>();
@@ -180,7 +260,7 @@ public class CommonController {
             ml.add(media);
             media = new HashMap<String, Object>();
             media.put("MediaType", "RADIO"); //电台
-            media.put("RadioName", "央广音乐");
+            media.put("RadioName", "CRI怀旧金曲音乐频道");
             media.put("RadioId", "002");
             media.put("RadioImg", "images/dft_broadcast.png");
             media.put("RadioURI", "mms://a.b.c/aaa.mpg");
@@ -191,7 +271,7 @@ public class CommonController {
             media.put("RadioName", "央广新闻");
             media.put("RadioId", "003");
             media.put("RadioImg", "images/dft_broadcast.png");
-            media.put("RadioURI", "mms://a.b.c/aaa.mpg");
+            media.put("RadioURI", "mms://live.cri.cn/oldies");
             media.put("CurrentContent", "时政要闻");//当前节目
             ml.add(media);
             media = new HashMap<String, Object>();
@@ -251,10 +331,10 @@ public class CommonController {
             rl.add(media);
             media = new HashMap<String, Object>();
             media.put("MediaType", "RADIO"); //电台
-            media.put("RadioName", "北京交通广播");
+            media.put("RadioName", "CRI英语漫听电台");
             media.put("RadioId", "001");
             media.put("RadioImg", "images/dft_broadcast.png");
-            media.put("RadioURI", "mms://a.b.c/aaa.mpg");
+            media.put("RadioURI", "mms://live.cri.cn/english");
             media.put("CurrentContent", "路况信息");//当前节目
             rl.add(media);
             media = new HashMap<String, Object>();
@@ -270,10 +350,10 @@ public class CommonController {
             rl.add(media);
             media = new HashMap<String, Object>();
             media.put("MediaType", "RADIO"); //电台
-            media.put("RadioName", "央广新闻");
+            media.put("RadioName", "CRI乡村民谣音乐");
             media.put("RadioId", "003");
             media.put("RadioImg", "images/dft_broadcast.png");
-            media.put("RadioURI", "mms://a.b.c/aaa.mpg");
+            media.put("RadioURI", "mms://live.cri.cn/country");
             media.put("CurrentContent", "时政要闻");//当前节目
             rl.add(media);
             media = new HashMap<String, Object>();
@@ -290,10 +370,10 @@ public class CommonController {
             rl.add(media);
             media = new HashMap<String, Object>();
             media.put("MediaType", "RADIO"); //电台
-            media.put("RadioName", "央广音乐");
+            media.put("RadioName", "CRI肯尼亚调频");
             media.put("RadioId", "002");
             media.put("RadioImg", "images/dft_broadcast.png");
-            media.put("RadioURI", "mms://a.b.c/aaa.mpg");
+            media.put("RadioURI", "mms://livexwb.cri.com.cn/kenya");
             media.put("CurrentContent", "经典回顾");//当前节目
             rl.add(media);
             map.put("ReturnType", "1001");
