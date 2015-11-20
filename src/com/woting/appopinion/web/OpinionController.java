@@ -1,4 +1,4 @@
-package com.woting.mobile.web;
+package com.woting.appopinion.web;
 
 import java.util.ArrayList;
 import java.util.HashMap;

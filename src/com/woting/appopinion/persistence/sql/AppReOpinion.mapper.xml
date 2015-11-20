@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  针对应用的反馈
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WT_APPREOPINION">
+  <!-- 对象定义:意见反馈 -->
+  <resultMap id="reOpinionMap" type="wtAppReOpinion">
+    <id      column="id"         property="id"         jdbcType="VARCHAR"/>
+    <result  column="opinionId"  property="opinionId"  jdbcType="VARCHAR"/>
+    <result  column="userId"     property="userId"     jdbcType="VARCHAR"/>
+    <result  column="reOpinion"  property="reOpinion"  jdbcType="VARCHAR"/>
+    <result  column="cTime"      property="CTime"      jdbcType="TIMESTAMP"/>
+  </resultMap>
+
+  <!-- 所有列 -->
+  <sql id="Base_Column_List">
+    id, opinionId, userId, opinion, cTime
+  </sql>
+  <sql id="Base_Column_List_A">
+    a.id, a.opinionId, a.userId, a.opinion, a.cTime
+  </sql>
+
+  <!-- 条件子句 -->
+  <sql id="WhereClauseByEntiey">
+    <where>
+      <trim prefix="(" suffix=")" prefixOverrides="and">
+        <if test="id!=null"> and id=#{id,jdbcType=VARCHAR}</if>
+        <if test="opinionId!=null"> and opinionId=#{opinionId,jdbcType=VARCHAR}</if>
+        <if test="userId!=null"> and userId=#{userId,jdbcType=VARCHAR}</if>
+        <if test="reOpinion!=null"> and reOpinion=#{reOpinion,jdbcType=VARCHAR}</if>
+        <if test="CTime!=null"> and cTime=#{CTime,jdbcType=TIMESTAMP}</if>
+      </trim>
+    </where>
+  </sql>
+
+  <!-- 获得记录条数-->
+  <select id="count" parameterType="java.util.Map" resultType="java.lang.Integer">
+    select count(*) from wt_AppReOpinion <if test="_parameter=null"><include refid="WhereClauseByEntiey"/></if>
+  </select>
+
+  <!-- 获得列表 -->
+  <select id="getList" resultMap="reOpinionMap" parameterType="java.util.Map">
+    select <include refid="Base_Column_List_A"/> from wt_AppReOpinion
+    <if test="_parameter=null"><include refid="WhereClauseByEntiey"/></if>
+    <if test="sortByClause!=null">order by ${sortByClause}</if>
+  </select>
+  <!-- 获得列表，根据用户Id(提意见的人) -->
+  <select id="getListByUserId" resultMap="reOpinionMap" parameterType="java.util.Map">
+    select <include refid="Base_Column_List"/> from wt_AppReOpinion a, wt_AppReOpinion b where a.opinionId=b.id
+    <if test="userId!=null"> and b.userId=#{userId,jdbcType=VARCHAR}</if>
+    <if test="userId==null and imei!=null"> and b.userId is null and b.imei=#{imei,jdbcType=VARCHAR}</if>
+    <if test="userId==null and imei==null"> and 1=2</if>
+    order by cTime desc
+  </select>
+
+  <!-- 获得一条数据 -->
+  <select id="getInfo" resultMap="reOpinionMap" parameterType="java.util.Map">
+    select <include refid="Base_Column_List"/> from wt_AppReOpinion <if test="_parameter=null"><include refid="WhereClauseByEntiey"/></if>
+  </select>
+  <select id="getInfoById" resultMap="reOpinionMap" parameterType="java.lang.String">
+    select <include refid="Base_Column_List"/> from wt_AppReOpinion where id=#{id,jdbcType=VARCHAR}
+  </select>
+
+  <!-- 新增数据 -->
+  <insert id="insert" parameterType="java.util.Map">
+    insert into wt_AppReOpinion
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id!=null">id,</if>
+      <if test="opinionId!=null">opinionId,</if>
+      <if test="userId!=null">userId,</if>
+      <if test="reOpinion!=null">reOpinion,</if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id!=null">#{id,jdbcType=VARCHAR},</if>
+      <if test="opinionId!=null">#{opinionId,jdbcType=VARCHAR},</if>
+      <if test="userId!=null">#{userId,jdbcType=VARCHAR},</if>
+      <if test="reOpinion!=null">#{reOpinion,jdbcType=VARCHAR},</if>
+    </trim>
+  </insert>
+
+  <!-- 修改 根据主键-->
+  <update id="update" parameterType="java.util.Map">
+    update wt_AppReOpinion
+    <set>
+      <if test="opinionId!=null">opinionId=#{opinionId,jdbcType=VARCHAR},</if>
+      <if test="userId!=null">userId=#{userId,jdbcType=VARCHAR},</if>
+      <if test="reOpinion!=null">reOpinion=#{reOpinion,jdbcType=VARCHAR},</if>
+      <if test="CTime=null">cTime=#{CTime,jdbcType=TIMESTAMP},</if>
+    </set>
+    where id=#{id,jdbcType=VARCHAR}
+  </update>
+
+  <!-- 删除数据 -->
+  <delete id="delete" parameterType="java.lang.String">
+    delete from wt_AppReOpinion where id=#{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByEntity" parameterType="java.util.Map">
+    delete from wt_AppReOpinion <if test="_parameter=null"><include refid="WhereClauseByEntiey"/></if>
+  </delete>
+</mapper>

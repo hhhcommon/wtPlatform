@@ -24,8 +24,8 @@ public class GroupService {
     }
 
     /**
-     * 创建用户
-     * @param user 用户信息
+     * 创建用户组
+     * @param group 用户组信息
      * @return 创建用户成功返回1，否则返回0
      */
     public int insertGroup(Group group) {
@@ -47,7 +47,7 @@ public class GroupService {
 
     /**
      * 创建用户用户组关系
-     * @param group 用户组
+     * @param g 用户组
      * @param u 用户
      */
     public int insertGroupUser(Group g, User u) {
