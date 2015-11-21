@@ -11,7 +11,7 @@ import com.spiritdata.framework.util.StringUtils;
 public class SessionKey implements Serializable {
     private static final long serialVersionUID = 8584805045595806786L;
 
-    private String mobileId; //设备Id
+    private String mobileId; //设备Id，IMEI
     private String userId; //用户Id，若未登录，则用户Id为空
 
     public String getMobileId() {

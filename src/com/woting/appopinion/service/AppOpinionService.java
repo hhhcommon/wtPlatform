@@ -1,5 +1,6 @@
 package com.woting.appopinion.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +54,35 @@ public class AppOpinionService {
             Map<String, String> param = new HashMap<String, String>();
             param.put("userId", userId);
             param.put("imei", imei);
-            this.opinionDao.queryForList("", param);
+            List<AppOpinionPo> ol = this.opinionDao.queryForList("getListByUserId", param);
+            if (ol!=null&&ol.size()>0) {
+                List<AppOpinion> ret = new ArrayList<AppOpinion>();
+                AppOpinion item = null;
+                List<AppReOpinionPo> rol = this.reOpinionDao.queryForList("getListByUserId", param);
+                if (rol!=null&&rol.size()>0) {
+                    int i=0;
+                    AppReOpinionPo arop;
+                    for (AppOpinionPo op: ol) {
+                        item=new AppOpinion();
+                        item.buildFromPo(op);
+                        arop=rol.get(i);
+                        if (arop.getOpinionId().equals(op.getId())) {
+                            item.addOneRe(arop);
+                            i++;
+                        }
+                        ret.add(item);
+                        
+                    }
+                } else {
+                    for (AppOpinionPo op: ol) {
+                        item=new AppOpinion();
+                        item.buildFromPo(op);
+                        ret.add(item);
+                    }
+                }
+                return ret;
+            }
+            return null;
         } catch (Exception e) {
             e.printStackTrace();
         }

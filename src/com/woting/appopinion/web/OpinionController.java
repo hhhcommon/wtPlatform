@@ -5,22 +5,30 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.spiritdata.framework.util.StringUtils;
+import com.woting.appopinion.model.AppOpinion;
+import com.woting.appopinion.persistence.pojo.AppOpinionPo;
+import com.woting.appopinion.persistence.pojo.AppReOpinionPo;
+import com.woting.appopinion.service.AppOpinionService;
 import com.woting.mobile.MobileUtils;
 import com.woting.mobile.model.MobileParam;
 import com.woting.mobile.session.mem.SessionMemoryManage;
 import com.woting.mobile.session.model.MobileSession;
 import com.woting.mobile.session.model.SessionKey;
+import com.woting.passport.UGA.persistence.pojo.User;
 
 @Controller
 @RequestMapping(value="/opinion/app/")
 public class OpinionController {
-
+    @Resource
+    private AppOpinionService opinionsService;
     private SessionMemoryManage smm=SessionMemoryManage.getInstance();
 
     @RequestMapping(value="commit.do")
@@ -28,18 +36,57 @@ public class OpinionController {
     public Map<String,Object> getVersion(HttpServletRequest request) {
         Map<String,Object> map=new HashMap<String, Object>();
         try {
-            //0-处理访问
+            //0-获取参数
             Map<String, Object> m=MobileUtils.getDataFromRequest(request);
-            if (m!=null&&m.size()>0) {
-                MobileParam mp=MobileUtils.getMobileParam(m);
-                SessionKey sk=(mp==null?null:mp.getSessionKey());
-                if (sk!=null){
-                    map.put("SessionId", sk.getSessionId());
-                    MobileSession ms=smm.getSession(sk);
-                    if (ms!=null) ms.access();
+            if (m==null||m.size()==0) {
+                map.put("ReturnType", "0000");
+                map.put("Message", "无法获取需要的参数");
+                return map;
+            }
+            MobileParam mp=MobileUtils.getMobileParam(m);
+            SessionKey sk=(mp==null?null:mp.getSessionKey());
+            if (sk==null) {
+                map.put("ReturnType", "0000");
+                map.put("Message", "无法获取设备Id(IMEI)");
+                return map;
+            }
+            //1-获取UserId，并处理访问
+            String userId=(String)m.get("UserId");
+            map.put("SessionId", sk.getSessionId());
+            MobileSession ms=smm.getSession(sk);
+            if (ms==null) {
+                ms=new MobileSession(sk);
+                smm.addOneSession(ms);
+            } else {
+                ms.access();
+                if (StringUtils.isNullOrEmptyOrSpace(userId)) {
+                    userId=sk.getSessionId();
+                    if (userId.length()==15) {
+                        userId=null;
+                        User u=(User)ms.getAttribute("user");
+                        if (u!=null) userId=u.getUserId();
+                    }
                 }
             }
-            //1-获取意见信息
+            //2-获取意见
+            String opinion=(String)m.get("Opinion");
+            if (StringUtils.isNullOrEmptyOrSpace(opinion)) {
+                map.put("ReturnType", "1002");
+                map.put("Message", "无法获取意见");
+                return map;
+            }
+            //3-存储意见
+            try {
+                AppOpinionPo po=new AppOpinionPo();
+                po.setImei(sk.getMobileId());
+                po.setUserId(userId);
+                po.setOpinion(opinion);
+                opinionsService.insertOpinion(po);
+            } catch(Exception ei) {
+                map.put("ReturnType", "1003");
+                map.put("Message", ei.getMessage());
+                return map;
+            }
             map.put("ReturnType", "1001");
             return map;
         } catch(Exception e) {
@@ -56,75 +103,47 @@ public class OpinionController {
     public Map<String,Object> getList(HttpServletRequest request) {
         Map<String,Object> map=new HashMap<String, Object>();
         try {
-            //0-处理访问
+            //0-获取参数
             Map<String, Object> m=MobileUtils.getDataFromRequest(request);
-            if (m!=null&&m.size()>0) {
-                MobileParam mp=MobileUtils.getMobileParam(m);
-                SessionKey sk=(mp==null?null:mp.getSessionKey());
-                if (sk!=null){
-                    map.put("SessionId", sk.getSessionId());
-                    MobileSession ms=smm.getSession(sk);
-                    if (ms!=null) ms.access();
-                }
-                //获取用户信息
+            if (m==null||m.size()==0) {
+                map.put("ReturnType", "0000");
+                map.put("Message", "无法获取需要的参数");
+                return map;
             }
-            List<Map<String, Object>> ol = new ArrayList<Map<String, Object>>();
-            List<Map<String, Object>> rel=null;
-            Map<String, Object> selfOpinion=null, reOpinion=null;
-            //------------------
-            selfOpinion=new HashMap<String, Object>();//一个分类
-            selfOpinion.put("OpinionId", "001");
-            selfOpinion.put("Opinion", "建议001");
-            rel = new ArrayList<Map<String, Object>>();
-            reOpinion=new HashMap<String, Object>();
-            reOpinion.put("OpinionReId", "1001"); //电台
-            reOpinion.put("ReOpinion", "回复1");
-            rel.add(reOpinion);
-            reOpinion=new HashMap<String, Object>();
-            reOpinion.put("OpinionReId", "1002"); //电台
-            reOpinion.put("ReOpinion", "回复2");
-            rel.add(reOpinion);
-            selfOpinion.put("ReList", rel);
-            ol.add(selfOpinion);
-
-            //------------------
-            selfOpinion=new HashMap<String, Object>();//一个分类
-            selfOpinion.put("OpinionId", "002");
-            selfOpinion.put("Opinion", "建议002");
-            rel = new ArrayList<Map<String, Object>>();
-            reOpinion=new HashMap<String, Object>();
-            reOpinion.put("OpinionReId", "1001"); //电台
-            reOpinion.put("ReOpinion", "回复1-建议002");
-            rel.add(reOpinion);
-            reOpinion=new HashMap<String, Object>();
-            reOpinion.put("OpinionReId", "1002"); //电台
-            reOpinion.put("ReOpinion", "回复2-建议002");
-            rel.add(reOpinion);
-            selfOpinion.put("ReList", rel);
-            ol.add(selfOpinion);
-
-            //------------------
-            selfOpinion=new HashMap<String, Object>();//一个分类
-            selfOpinion.put("OpinionId", "003");
-            selfOpinion.put("Opinion", "建议003");
-            rel = new ArrayList<Map<String, Object>>();
-            reOpinion=new HashMap<String, Object>();
-            reOpinion.put("OpinionReId", "1001"); //电台
-            reOpinion.put("ReOpinion", "回复1-建议003");
-            rel.add(reOpinion);
-            reOpinion=new HashMap<String, Object>();
-            reOpinion.put("OpinionReId", "1002"); //电台
-            reOpinion.put("ReOpinion", "回复3-建议003");
-            rel.add(reOpinion);
-            reOpinion=new HashMap<String, Object>();
-            reOpinion.put("OpinionReId", "1003"); //电台
-            reOpinion.put("ReOpinion", "回复3-建议003");
-            rel.add(reOpinion);
-            selfOpinion.put("ReList", rel);
-            ol.add(selfOpinion);
-
-            map.put("ReturnType", "1001");
-            map.put("OpinionList", ol);
+            MobileParam mp=MobileUtils.getMobileParam(m);
+            SessionKey sk=(mp==null?null:mp.getSessionKey());
+            if (sk==null) {
+                map.put("ReturnType", "0000");
+                map.put("Message", "无法获取设备Id(IMEI)");
+                return map;
+            }
+            //1-获取UserId，并处理访问
+            String userId=(String)m.get("UserId");
+            map.put("SessionId", sk.getSessionId());
+            MobileSession ms=smm.getSession(sk);
+            if (ms==null) {
+                ms=new MobileSession(sk);
+                smm.addOneSession(ms);
+            } else {
+                ms.access();
+                if (StringUtils.isNullOrEmptyOrSpace(userId)) {
+                    userId=sk.getSessionId();
+                    if (userId.length()==15) {
+                        userId=null;
+                        User u=(User)ms.getAttribute("user");
+                        if (u!=null) userId=u.getUserId();
+                    }
+                }
+            }
+            List<AppOpinion> ol = opinionsService.getOpinionsByOnwerId(userId, sk.getMobileId());
+            if (ol!=null&&ol.size()>0) {
+                map.put("ReturnType", "1001");
+                map.put("OpinionList", convertAppOpinon4View(ol));
+            } else {
+                map.put("ReturnType", "1011");
+                map.put("Message", "无意见及反馈信息");
+                return map;
+            }
             return map;
         } catch(Exception e) {
             e.printStackTrace();
@@ -133,5 +152,30 @@ public class OpinionController {
             map.put("Message", e.getMessage());
             return map;
         }
+    }
+
+    private List<Map<String, Object>> convertAppOpinon4View(List<AppOpinion> ol) {
+        List<Map<String, Object>> ret = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> rel=null;
+        List<AppReOpinionPo> reApl=null;
+        Map<String, Object> selfOpinion=null, reOpinion=null;
+        for (AppOpinion ap: ol) {
+            selfOpinion=new HashMap<String, Object>();
+            selfOpinion.put("OpinionId", ap.getId());
+            selfOpinion.put("Opinion", ap.getOpinion());
+            reApl=ap.getReList();
+            if (reApl!=null&&reApl.size()>0) {
+                rel = new ArrayList<Map<String, Object>>();
+                for (AppReOpinionPo aro: reApl) {
+                    reOpinion=new HashMap<String, Object>();
+                    reOpinion.put("OpinionReId", aro.getId());
+                    reOpinion.put("ReOpinion", aro.getReOpinion());
+                    rel.add(reOpinion);
+                }
+                selfOpinion.put("ReList", rel);
+            }
+            ret.add(selfOpinion);
+        }
+        return ret;
     }
 }
