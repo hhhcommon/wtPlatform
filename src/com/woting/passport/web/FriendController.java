@@ -57,7 +57,7 @@ public class FriendController {
                 } else {
                     if (StringUtils.isNullOrEmptyOrSpace(userId)) {
                         userId=sk.getSessionId();
-                        if (userId.length()==15) {
+                        if (userId.length()!=12) {
                             userId=null;
                             User u = (User)ms.getAttribute("user");
                             if (u!=null) userId = u.getUserId();
@@ -135,7 +135,7 @@ public class FriendController {
                 } else {
                     if (StringUtils.isNullOrEmptyOrSpace(userId)) {
                         userId=sk.getSessionId();
-                        if (userId.length()==15) {
+                        if (userId.length()!=12) {
                             userId=null;
                             User u = (User)ms.getAttribute("user");
                             if (u!=null) userId = u.getUserId();
@@ -195,7 +195,7 @@ public class FriendController {
                 } else {
                     if (StringUtils.isNullOrEmptyOrSpace(userId)) {
                         userId=sk.getSessionId();
-                        if (userId.length()==15) {
+                        if (userId.length()!=12) {
                             userId=null;
                             User u = (User)ms.getAttribute("user");
                             if (u!=null) userId = u.getUserId();
@@ -267,7 +267,7 @@ public class FriendController {
                 } else {
                     if (StringUtils.isNullOrEmptyOrSpace(userId)) {
                         userId=sk.getSessionId();
-                        if (userId.length()==15) {
+                        if (userId.length()!=12) {
                             userId=null;
                             User u = (User)ms.getAttribute("user");
                             if (u!=null) userId = u.getUserId();
@@ -327,7 +327,7 @@ public class FriendController {
                 } else {
                     if (StringUtils.isNullOrEmptyOrSpace(userId)) {
                         userId=sk.getSessionId();
-                        if (userId.length()==15) {
+                        if (userId.length()!=12) {
                             userId=null;
                             User u = (User)ms.getAttribute("user");
                             if (u!=null) userId = u.getUserId();

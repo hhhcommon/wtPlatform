@@ -61,7 +61,7 @@ public class OpinionController {
                 ms.access();
                 if (StringUtils.isNullOrEmptyOrSpace(userId)) {
                     userId=sk.getSessionId();
-                    if (userId.length()==15) {
+                    if (userId.length()!=12) {
                         userId=null;
                         User u=(User)ms.getAttribute("user");
                         if (u!=null) userId=u.getUserId();
@@ -81,6 +81,13 @@ public class OpinionController {
                 po.setImei(sk.getMobileId());
                 po.setUserId(userId);
                 po.setOpinion(opinion);
+                //是否重复提交意见
+                List<AppOpinionPo> duplicates = opinionsService.getDuplicates(po);
+                if (duplicates!=null&&duplicates.size()>0) {
+                    map.put("ReturnType", "1004");
+                    map.put("Message", "该意见已经提交");
+                    return map;
+                };
                 opinionsService.insertOpinion(po);
             } catch(Exception ei) {
                 map.put("ReturnType", "1003");
@@ -128,7 +135,7 @@ public class OpinionController {
                 ms.access();
                 if (StringUtils.isNullOrEmptyOrSpace(userId)) {
                     userId=sk.getSessionId();
-                    if (userId.length()==15) {
+                    if (userId.length()!=12) {
                         userId=null;
                         User u=(User)ms.getAttribute("user");
                         if (u!=null) userId=u.getUserId();

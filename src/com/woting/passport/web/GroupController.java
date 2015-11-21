@@ -61,7 +61,7 @@ public class GroupController {
                 } else {
                     if (StringUtils.isNullOrEmptyOrSpace(creator)) {
                         creator=sk.getSessionId();
-                        if (creator.length()==15) {
+                        if (creator.length()!=12) {
                             creator=null;
                             User u = (User)ms.getAttribute("user");
                             if (u!=null) creator = u.getUserId();
@@ -151,7 +151,7 @@ public class GroupController {
                 } else {
                     if (StringUtils.isNullOrEmptyOrSpace(userId)) {
                         userId=sk.getSessionId();
-                        if (userId.length()==15) {
+                        if (userId.length()!=12) {
                             userId=null;
                             User u = (User)ms.getAttribute("user");
                             if (u!=null) userId = u.getUserId();

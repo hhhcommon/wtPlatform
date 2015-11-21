@@ -34,14 +34,26 @@
 
   <!-- 获得记录条数-->
   <select id="count" parameterType="java.util.Map" resultType="java.lang.Integer">
-    select count(*) from wt_AppOpinion <if test="_parameter=null"><include refid="WhereClauseByEntiey"/></if>
+    select count(*) from wt_AppOpinion <if test="_parameter!=null"><include refid="WhereClauseByEntiey"/></if>
   </select>
 
   <!-- 获得列表 -->
   <select id="getList" resultMap="opinionMap" parameterType="java.util.Map">
     select <include refid="Base_Column_List"/> from wt_AppOpinion
-    <if test="_parameter=null"><include refid="WhereClauseByEntiey"/></if>
+    <if test="_parameter!=null"><include refid="WhereClauseByEntiey"/></if>
     <if test="sortByClause!=null">order by ${sortByClause}</if>
+  </select>
+  <!-- 获得重复列表 -->
+  <select id="getDuplicates" resultMap="opinionMap" parameterType="java.util.Map">
+    select <include refid="Base_Column_List"/> from wt_AppOpinion
+    <where>
+      <trim prefix="(" suffix=")" prefixOverrides="and">
+        <if test="imei!=null"> and imei=#{imei,jdbcType=VARCHAR}</if>
+        <if test="userId!=null"> and userId=#{userId,jdbcType=VARCHAR}</if>
+        <if test="userId==null"> and userId is null</if>
+        <if test="opinion!=null"> and opinion=#{opinion,jdbcType=VARCHAR}</if>
+      </trim>
+    </where>
   </select>
   <!-- 获得列表，根据用户Id(提意见的人) -->
   <select id="getListByUserId" resultMap="opinionMap" parameterType="java.util.Map">
@@ -54,7 +66,7 @@
 
   <!-- 获得一条数据 -->
   <select id="getInfo" resultMap="opinionMap" parameterType="java.util.Map">
-    select <include refid="Base_Column_List"/> from wt_AppOpinion <if test="_parameter=null"><include refid="WhereClauseByEntiey"/></if>
+    select <include refid="Base_Column_List"/> from wt_AppOpinion <if test="_parameter!=null"><include refid="WhereClauseByEntiey"/></if>
   </select>
   <select id="getInfoById" resultMap="opinionMap" parameterType="java.lang.String">
     select <include refid="Base_Column_List"/> from wt_AppOpinion where id=#{id,jdbcType=VARCHAR}
@@ -94,6 +106,6 @@
     delete from wt_AppOpinion where id=#{id,jdbcType=VARCHAR}
   </delete>
   <delete id="deleteByEntity" parameterType="java.util.Map">
-    delete from wt_AppOpinion <if test="_parameter=null"><include refid="WhereClauseByEntiey"/></if>
+    delete from wt_AppOpinion <if test="_parameter!=null"><include refid="WhereClauseByEntiey"/></if>
   </delete>
 </mapper>

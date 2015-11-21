@@ -27,8 +27,22 @@ public class AppOpinionService {
     }
 
     /**
+     * 得到意见
+     * @param opinion 意见信息
+     * @return 创建用户成功返回1，否则返回0
+     */
+    public List<AppOpinionPo> getDuplicates(AppOpinionPo opinion) {
+        try {
+            return opinionDao.queryForList("getDuplicates", opinion.toHashMapAsBean());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
      * 保存用户所提意见
-     * @param user 用户信息
+     * @param opinion 意信息
      * @return 创建用户成功返回1，否则返回0
      */
     public int insertOpinion(AppOpinionPo opinion) {
@@ -45,8 +59,8 @@ public class AppOpinionService {
 
     /**
      * 根据用户指标（userId或Imei）得到意见及反馈列表
-     * @param userId
-     * @param imei
+     * @param userId 用户Id
+     * @param imei 设备编码
      * @return 意见及反馈列表
      */
     public List<AppOpinion> getOpinionsByOnwerId(String userId, String imei) {
@@ -66,9 +80,10 @@ public class AppOpinionService {
                         item=new AppOpinion();
                         item.buildFromPo(op);
                         arop=rol.get(i);
-                        if (arop.getOpinionId().equals(op.getId())) {
+                        while (arop.getOpinionId().equals(op.getId())) {
                             item.addOneRe(arop);
-                            i++;
+                            if (++i==rol.size()) break;
+                            arop=rol.get(i);
                         }
                         ret.add(item);
                         

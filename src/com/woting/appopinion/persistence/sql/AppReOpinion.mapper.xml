@@ -16,10 +16,10 @@
 
   <!-- 所有列 -->
   <sql id="Base_Column_List">
-    id, opinionId, userId, opinion, cTime
+    id, opinionId, userId, reOpinion, cTime
   </sql>
   <sql id="Base_Column_List_A">
-    a.id, a.opinionId, a.userId, a.opinion, a.cTime
+    a.id, a.opinionId, a.userId, a.reOpinion, a.cTime
   </sql>
 
   <!-- 条件子句 -->
@@ -37,18 +37,18 @@
 
   <!-- 获得记录条数-->
   <select id="count" parameterType="java.util.Map" resultType="java.lang.Integer">
-    select count(*) from wt_AppReOpinion <if test="_parameter=null"><include refid="WhereClauseByEntiey"/></if>
+    select count(*) from wt_AppReOpinion <if test="_parameter!=null"><include refid="WhereClauseByEntiey"/></if>
   </select>
 
   <!-- 获得列表 -->
   <select id="getList" resultMap="reOpinionMap" parameterType="java.util.Map">
-    select <include refid="Base_Column_List_A"/> from wt_AppReOpinion
-    <if test="_parameter=null"><include refid="WhereClauseByEntiey"/></if>
+    select <include refid="Base_Column_List"/> from wt_AppReOpinion
+    <if test="_parameter!=null"><include refid="WhereClauseByEntiey"/></if>
     <if test="sortByClause!=null">order by ${sortByClause}</if>
   </select>
   <!-- 获得列表，根据用户Id(提意见的人) -->
   <select id="getListByUserId" resultMap="reOpinionMap" parameterType="java.util.Map">
-    select <include refid="Base_Column_List"/> from wt_AppReOpinion a, wt_AppReOpinion b where a.opinionId=b.id
+    select <include refid="Base_Column_List_A"/> from wt_AppReOpinion a, wt_AppOpinion b where a.opinionId=b.id
     <if test="userId!=null"> and b.userId=#{userId,jdbcType=VARCHAR}</if>
     <if test="userId==null and imei!=null"> and b.userId is null and b.imei=#{imei,jdbcType=VARCHAR}</if>
     <if test="userId==null and imei==null"> and 1=2</if>
@@ -57,7 +57,7 @@
 
   <!-- 获得一条数据 -->
   <select id="getInfo" resultMap="reOpinionMap" parameterType="java.util.Map">
-    select <include refid="Base_Column_List"/> from wt_AppReOpinion <if test="_parameter=null"><include refid="WhereClauseByEntiey"/></if>
+    select <include refid="Base_Column_List"/> from wt_AppReOpinion <if test="_parameter!=null"><include refid="WhereClauseByEntiey"/></if>
   </select>
   <select id="getInfoById" resultMap="reOpinionMap" parameterType="java.lang.String">
     select <include refid="Base_Column_List"/> from wt_AppReOpinion where id=#{id,jdbcType=VARCHAR}
@@ -97,6 +97,6 @@
     delete from wt_AppReOpinion where id=#{id,jdbcType=VARCHAR}
   </delete>
   <delete id="deleteByEntity" parameterType="java.util.Map">
-    delete from wt_AppReOpinion <if test="_parameter=null"><include refid="WhereClauseByEntiey"/></if>
+    delete from wt_AppReOpinion <if test="_parameter!=null"><include refid="WhereClauseByEntiey"/></if>
   </delete>
 </mapper>
