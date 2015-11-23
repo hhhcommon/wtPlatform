@@ -303,7 +303,7 @@ public class PassportController {
                     map.put("Message", "无法获取用户Id为["+userId+"]的用户");
                 } else {
                     if (!StringUtils.isNullOrEmptyOrSpace(phoneNum)) u.setMainPhoneNum(phoneNum);
-                    if (!StringUtils.isNullOrEmptyOrSpace(mail)) u.setMailAdress(mail);
+                    if (!StringUtils.isNullOrEmptyOrSpace(mail)) u.setMailAddress(mail);
                     int retFlag=userService.updateUser(u);
                     if (retFlag==1) map.put("ReturnType", "1001");
                     else {

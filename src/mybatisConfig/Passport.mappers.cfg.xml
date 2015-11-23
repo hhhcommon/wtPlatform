@@ -8,10 +8,16 @@
     <typeAlias alias="WtGroup" type="com.woting.passport.UGA.persistence.pojo.Group"/>
     <typeAlias alias="WtGroupUser" type="com.woting.passport.UGA.persistence.pojo.GroupUser"/>
     <typeAlias alias="MobileUsed" type="com.woting.passport.login.persistence.pojo.MobileUsed"/>
+    <typeAlias alias="InviteFriend" type="com.woting.passport.friend.persistence.pojo.InviteFriendPo"/>
+    <typeAlias alias="FriendRel" type="com.woting.passport.friend.persistence.pojo.FriendRelPo"/>
   </typeAliases>
   <mappers>
+    <mapper resource="com/woting/passport/login/persistence/sql/MobileUsed.mapper.xml"/>
     <mapper resource="com/woting/passport/UGA/persistence/sql/WotingUser.mapper.xml"/>
     <mapper resource="com/woting/passport/UGA/persistence/sql/Group.mapper.xml"/>
-    <mapper resource="com/woting/passport/login/persistence/sql/MobileUsed.mapper.xml"/>
+    <mapper resource="com/woting/passport/friend/persistence/sql/Invite.mapper.xml"/>
+    <mapper resource="com/woting/passport/friend/persistence/sql/Friend.mapper.xml"/>
+    <!--
+    -->
   </mappers>
 </configuration>

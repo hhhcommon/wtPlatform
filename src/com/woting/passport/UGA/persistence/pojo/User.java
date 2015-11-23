@@ -11,7 +11,7 @@ public class User extends UgaUser {
     private static final long serialVersionUID = 400373602903981461L;
 
     private String mainPhoneNum; //用户主手机号码，用户可能有多个手机号码
-    private String mailAdress; //用户邮箱
+    private String mailAddress; //用户邮箱
     private int userType; //用户分类：1=普通用户;2=编辑用户
     private int userState;//用户状态，0~2
     private String protraitBig;//用户头像大
@@ -26,11 +26,11 @@ public class User extends UgaUser {
     public void setMainPhoneNum(String mainPhoneNum) {
         this.mainPhoneNum = mainPhoneNum;
     }
-    public String getMailAdress() {
-        return mailAdress;
+    public String getMailAddress() {
+        return mailAddress;
     }
-    public void setMailAdress(String mailAdress) {
-        this.mailAdress = mailAdress;
+    public void setMailAddress(String mailAddress) {
+        this.mailAddress = mailAddress;
     }
     public int getUserType() {
         return userType;
@@ -81,7 +81,7 @@ public class User extends UgaUser {
         if (!StringUtils.isNullOrEmptyOrSpace(this.userName)) retM.put("RealName", this.userName);
         if (!StringUtils.isNullOrEmptyOrSpace(this.loginName)) retM.put("UserName", this.loginName);
         if (!StringUtils.isNullOrEmptyOrSpace(this.mainPhoneNum)) retM.put("PhoneNum", this.mainPhoneNum);
-        if (!StringUtils.isNullOrEmptyOrSpace(this.mailAdress)) retM.put("Email", this.mailAdress);
+        if (!StringUtils.isNullOrEmptyOrSpace(this.mailAddress)) retM.put("Email", this.mailAddress);
         if (!StringUtils.isNullOrEmptyOrSpace(this.descn)) retM.put("Descript", this.descn);
         return retM;
     }

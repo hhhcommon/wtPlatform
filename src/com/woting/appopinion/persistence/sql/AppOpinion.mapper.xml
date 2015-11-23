@@ -8,7 +8,7 @@
   <!-- 对象定义:用户意见 -->
   <resultMap id="opinionMap" type="WtAppOpinion">
     <id      column="id"       property="id"       jdbcType="VARCHAR"/>
-    <id      column="imei"     property="imei"     jdbcType="VARCHAR"/>
+    <result  column="imei"     property="imei"     jdbcType="VARCHAR"/>
     <result  column="userId"   property="userId"   jdbcType="VARCHAR"/>
     <result  column="opinion"  property="opinion"  jdbcType="VARCHAR"/>
     <result  column="cTime"    property="CTime"    jdbcType="TIMESTAMP"/>

@@ -47,7 +47,7 @@ CREATE TABLE plat_User (
   loginName     varchar(15)      NOT NULL                COMMENT '登录账号',
   password      varchar(30)                DEFAULT NULL  COMMENT '密码',
   mainPhoneNum  varchar(100)               DEFAULT NULL  COMMENT '用户主手机号码',
-  mailAdress    varchar(100)               DEFAULT NULL  COMMENT '邮箱(非空为一索引)',
+  mailAddress   varchar(100)               DEFAULT NULL  COMMENT '邮箱(非空为一索引)',
   userType      int(1) unsigned  NOT NULL                COMMENT '用户分类：1自然人用户，2机构用户',
   userState     int(1)           NOT NULL  DEFAULT '0'   COMMENT '用户状态，0-2,0代表未激活的用户，1代表已激用户，2代表失效用户,3根据邮箱找密码的用户',
   protraitBig   varchar(300)                             COMMENT '用户头像大',
@@ -112,15 +112,16 @@ ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户组成员表';
 /**007 WT_FRIENDINVITE(好友邀请表)*/
 DROP TABLE IF EXISTS wt_FriendInvite;
 CREATE TABLE wt_FriendInvite (
-  id               varchar(32)  NOT NULL  COMMENT 'uuid(主键)',
-  aUserId          varchar(32)  NOT NULL  COMMENT '第一用户Id',
-  bUserId          varchar(32)  NOT NULL  COMMENT '第二用户Id',
-  inviteVector     varchar(600)           COMMENT '邀请方向(vector)，总是第一用户邀请第二用户，且是正整数，邀请一次，则增加1，直到邀请成功',
-  inviteMessage    int(2)       NOT NULL  COMMENT '当前邀请说明文字',
-  firstInviteTime  timestamp    NOT NULL  DEFAULT CURRENT_TIMESTAMP  COMMENT '创建时间:首次邀请时间',
-  inviteTime       timestamp    NOT NULL  DEFAULT CURRENT_TIMESTAMP  COMMENT '本次邀请时间',
-  acceptFlag       int(1)       NOT NULL  COMMENT '邀请状态：0未处理;1邀请成功;2拒绝邀请',
-  acceptTime       timestamp              COMMENT '接受/拒绝邀请的时间',
+  id               varchar(32)   NOT NULL                COMMENT 'uuid(主键)',
+  aUserId          varchar(32)   NOT NULL                COMMENT '第一用户Id',
+  bUserId          varchar(32)   NOT NULL                COMMENT '第二用户Id',
+  inviteVector     int(2)        NOT NULL  DEFAULT 0     COMMENT '邀请方向(vector)，总是第一用户邀请第二用户，且是正整数，邀请一次，则增加1，直到邀请成功',
+  inviteMessage    varchar(600)                          COMMENT '当前邀请说明文字',
+  firstInviteTime  timestamp     NOT NULL  DEFAULT CURRENT_TIMESTAMP  COMMENT '创建时间:首次邀请时间',
+  inviteTime       timestamp     NOT NULL  DEFAULT CURRENT_TIMESTAMP  COMMENT '本次邀请时间',
+  acceptFlag       int(1)        NOT NULL  DEFAULT 0     COMMENT '邀请状态：0未处理;1邀请成功;2拒绝邀请',
+  acceptTime       timestamp               DEFAULT NULL  COMMENT '接受/拒绝邀请的时间',
+  refuseMessage    varchar(32)                           COMMENT '拒绝邀请理由',
   PRIMARY KEY(id)
 )
 ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='好友邀请列表';
@@ -185,7 +186,7 @@ DROP TABLE IF EXISTS wt_AppOpinion;
 CREATE TABLE wt_AppOpinion (
   id       varchar(32)   NOT NULL  COMMENT 'uuid(主键)',
   imei     varchar(32)   NOT NULL  COMMENT '设备IMEI，为移动端设置，若是PC，则必须是网卡的Mac地址',
-  userId   varchar(32)   NOT NULL  COMMENT '用户Id',
+  userId   varchar(32)             COMMENT '用户Id',
   opinion  varchar(600)  NOT NULL  COMMENT '所提意见，200汉字',
   cTime    timestamp     NOT NULL  DEFAULT CURRENT_TIMESTAMP  COMMENT '创建时间，意见成功提交时间',
   PRIMARY KEY(id)
@@ -203,3 +204,26 @@ CREATE TABLE wt_AppReOpinion (
   PRIMARY KEY(id)
 )
 ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='电台分类表';
+
+
+
+/*****************************************/
+/**
+CREATE OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER
+VIEW vWt_Friend_Rel AS 
+  select a.id, a.aUserId aUserId, b.loginName aUserName, b.protraitMini aProtraitUri,
+    a.bUserId bUserId, c.loginName bUserName, c.protraitMini bProtraitUri,
+    0+a.inviteVector inviteVector, a.inviteTime
+  from wt_Friend_Rel a
+  left join plat_User b on a.aUserId=b.id
+  left join plat_User c on a.bUserId=c.id
+  union all
+  select d.id, d.bUserId aUserId, e.loginName aUserName, e.protraitMini aProtraitUri,
+    d.aUserId bUserId, f.loginName bUserName, f.protraitMini bProtraitUri,
+    0-d.inviteVector inviteVector, d.inviteTime
+  from wt_Friend_Rel d
+  left join plat_User e on d.aUserId=e.id
+  left join plat_User f on d.bUserId=f.id
+;
+**/
+/*****************************************/

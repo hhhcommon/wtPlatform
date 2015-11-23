@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  好友关系
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WT_FRIEND">
+  <!--好友信息-->
+  <!-- 对象定义:好友信息 -->
+  <resultMap id="friendRelMap" type="FriendRel">
+    <id      column="id"            property="id"            jdbcType="VARCHAR"/>
+    <result  column="aUserId"       property="aUserId"       jdbcType="VARCHAR"/>
+    <result  column="bUserId"       property="bUserId"       jdbcType="VARCHAR"/>
+    <result  column="inviteVector"  property="inviteVector"  jdbcType="INTEGER"/>
+    <result  column="inviteTime"    property="inviteTime"    jdbcType="TIMESTAMP"/>
+  </resultMap>
+
+  <!-- 所有列 -->
+  <sql id="Base_Column_List">
+    id, aUserId, bUserId, inviteVector, inviteTime
+  </sql>
+
+  <!-- 条件子句 -->
+  <sql id="WhereClauseByEntiey">
+    <where>
+      <trim prefix="(" suffix=")" prefixOverrides="and">
+        <if test="id!=null"> and id=#{id,jdbcType=VARCHAR}</if>
+        <if test="aUserId!=null"> and aUserId=#{aUserId,jdbcType=VARCHAR}</if>
+        <if test="bUserId!=null"> and bUserId=#{bUserId,jdbcType=VARCHAR}</if>
+        <if test="inviteVector!=null and inviteVector!=0"> and inviteVector=#{inviteVector,jdbcType=VARCHAR}</if>
+        <if test="inviteTime!=null"> and inviteTime=#{inviteTime,jdbcType=TIMESTAMP}</if>
+      </trim>
+    </where>
+  </sql>
+
+  <!-- 获得记录条数-->
+  <select id="count" parameterType="java.util.Map" resultType="java.lang.Integer">
+    select count(*) from vWt_Friend_Rel <if test="_parameter!=null"><include refid="WhereClauseByEntiey"/></if>
+  </select>
+
+  <!-- 获得列表 -->
+  <select id="getList" resultMap="friendRelMap" parameterType="java.util.Map">
+    select <include refid="Base_Column_List"/> from vWt_Friend_Rel
+    <if test="_parameter!=null"><include refid="WhereClauseByEntiey"/></if>
+    <if test="sortByClause!=null">order by ${sortByClause}</if>
+  </select>
+
+  <!-- 获得一条数据 -->
+  <select id="getInfoById" resultMap="friendRelMap" parameterType="java.lang.String">
+    select <include refid="Base_Column_List"/> from vWt_Friend_Rel where id=#{id,jdbcType=VARCHAR}
+  </select>
+
+  <!-- 新增数据 -->
+  <insert id="insert" parameterType="java.util.Map">
+    insert into wt_Friend_Rel
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id!=null">id,</if>
+      <if test="aUserId!=null">aUserId,</if>
+      <if test="bUserId!=null">bUserId,</if>
+      <if test="inviteVector!=null and inviteVector!=0">inviteVector,</if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id!=null">#{id,jdbcType=VARCHAR},</if>
+      <if test="aUserId!=null">#{aUserId,jdbcType=VARCHAR},</if>
+      <if test="bUserId!=null">#{bUserId,jdbcType=VARCHAR},</if>
+      <if test="inviteVector!=null and inviteVector!=0">#{inviteVector,jdbcType=VARCHAR},</if>
+    </trim>
+  </insert>
+
+  <!-- 修改 根据主键-->
+  <update id="update" parameterType="java.util.Map">
+    update wt_Friend_Rel
+    <set>
+      <if test="aUserId!=null">aUserId=#{aUserId,jdbcType=VARCHAR},</if>
+      <if test="bUserId!=null">bUserId=#{bUserId,jdbcType=VARCHAR},</if>
+      <if test="inviteVector!=null and inviteVector!=0">inviteVector=#{inviteVector,jdbcType=VARCHAR},</if>
+      <if test="inviteTime!=null">inviteTime=#{inviteTime,jdbcType=TIMESTAMP},</if>
+    </set>
+    where id=#{id,jdbcType=VARCHAR}
+  </update>
+
+  <!-- 删除数据 -->
+  <delete id="delete" parameterType="java.lang.String">
+    delete from wt_Friend_Rel where id=#{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByEntity" parameterType="java.util.Map">
+    delete from wt_Friend_Rel <if test="_parameter!=null"><include refid="WhereClauseByEntiey"/></if>
+  </delete>  
+</mapper>

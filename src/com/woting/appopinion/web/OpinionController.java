@@ -149,7 +149,6 @@ public class OpinionController {
             } else {
                 map.put("ReturnType", "1011");
                 map.put("Message", "无意见及反馈信息");
-                return map;
             }
             return map;
         } catch(Exception e) {
