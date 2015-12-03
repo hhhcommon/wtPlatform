@@ -17,7 +17,7 @@ import com.woting.mobile.MobileUtils;
 import com.woting.mobile.model.MobileParam;
 import com.woting.mobile.session.mem.SessionMemoryManage;
 import com.woting.mobile.session.model.MobileSession;
-import com.woting.mobile.session.model.SessionKey;
+import com.woting.mobile.model.SessionKey;
 import com.woting.passport.UGA.persistence.pojo.Group;
 import com.woting.passport.UGA.persistence.pojo.User;
 import com.woting.passport.UGA.service.GroupService;
@@ -41,17 +41,22 @@ public class GroupController {
     public Map<String,Object> buildGroup(HttpServletRequest request) {
         Map<String,Object> map=new HashMap<String, Object>();
         try {
-            //0-获得参数
+            //0-获取参数
             Map<String, Object> m=MobileUtils.getDataFromRequest(request);
             if (m==null||m.size()==0) {
                 map.put("ReturnType", "0000");
-                map.put("Message", "无法获得需要的参数");
+                map.put("Message", "无法获取需要的参数");
                 return map;
             }
             MobileParam mp=MobileUtils.getMobileParam(m);
             SessionKey sk=(mp==null?null:mp.getSessionKey());
-            //1-得到创建者
-            String creator=(String)m.get("Creator");
+            if (sk==null) {
+                map.put("ReturnType", "0000");
+                map.put("Message", "无法获取设备Id(IMEI)");
+                return map;
+            }
+            //1-得到创建者，并处理访问
+            String creator=null;
             if (sk!=null) {
                 map.put("SessionId", sk.getSessionId());
                 MobileSession ms=smm.getSession(sk);
@@ -59,59 +64,58 @@ public class GroupController {
                     ms=new MobileSession(sk);
                     smm.addOneSession(ms);
                 } else {
-                    if (StringUtils.isNullOrEmptyOrSpace(creator)) {
-                        creator=sk.getSessionId();
-                        if (creator.length()!=12) {
-                            creator=null;
-                            User u = (User)ms.getAttribute("user");
-                            if (u!=null) creator = u.getUserId();
-                        }
-                    }
                     ms.access();
+                    if (sk.isUserSession()) creator=sk.getUserId();
+                    else {
+                        User u=(User)ms.getAttribute("user");
+                        if (u!=null) creator=u.getUserId();
+                        
+                    }
                 }
             }
             if (StringUtils.isNullOrEmptyOrSpace(creator)) {
                 map.put("ReturnType", "1002");
                 map.put("Message", "无法得到创建者");
+                return map;
+            }
+
+            //创建用户组
+            String members=(String)m.get("Members");
+            if (StringUtils.isNullOrEmptyOrSpace(members)) {
+                map.put("ReturnType", "1002");
+                map.put("Message", "无法得到组员信息");
             } else {
-                //创建用户组
-                String members=(String)m.get("Members");
-                if (StringUtils.isNullOrEmptyOrSpace(members)) {
+                members=creator+","+members;
+                String[] mArray=members.split(",");
+                members="";
+                for (int i=0; i<mArray.length;i++) {
+                    members+=",'"+mArray[i].trim()+"'";
+                }
+                List<User> ml=userService.getMembers4BuildGroup(members.substring(1));
+                if (ml==null||ml.size()==0) {
                     map.put("ReturnType", "1002");
-                    map.put("Message", "无法得到组员信息");
+                    map.put("Message", "给定的组员信息不存在");
+                } else if (ml.size()==1) {
+                    map.put("ReturnType", "1002");
+                    map.put("Message", "只有一个有效成员，无法构建用户组");
                 } else {
-                    members=creator+","+members;
-                    String[] mArray=members.split(",");
-                    members="";
-                    for (int i=0; i<mArray.length;i++) {
-                        members+=",'"+mArray[i].trim()+"'";
-                    }
-                    List<User> ml=userService.getMembers4BuildGroup(members.substring(1));
-                    if (ml==null||ml.size()==0) {
-                        map.put("ReturnType", "1002");
-                        map.put("Message", "给定的组员信息不存在");
-                    } else if (ml.size()==1) {
-                        map.put("ReturnType", "1002");
-                        map.put("Message", "只有一个有效成员，无法构建用户组");
-                    } else {
-                        //得到组名
-                        String groupName=(String)m.get("GroupName");
-                        if (StringUtils.isNullOrEmptyOrSpace(groupName)) {
-                            groupName="";
-                            for (User u:ml) {
-                                groupName+=","+u.getLoginName();
-                            }
-                            groupName=groupName.substring(1);
+                    //得到组名
+                    String groupName=(String)m.get("GroupName");
+                    if (StringUtils.isNullOrEmptyOrSpace(groupName)) {
+                        groupName="";
+                        for (User u:ml) {
+                            groupName+=","+u.getLoginName();
                         }
-                        //创建组
-                        Group g=new Group();
-                        g.setCreateUserId(creator);
-                        g.setGroupName(groupName);
-                        g.setGroupUsers(ml);
-                        groupService.insertGroup(g);
-                        map.put("ReturnType", "1001");
-                        map.put("GroupName", groupName);
+                        groupName=groupName.substring(1);
                     }
+                    //创建组
+                    Group g=new Group();
+                    g.setCreateUserId(creator);
+                    g.setGroupName(groupName);
+                    g.setGroupUsers(ml);
+                    groupService.insertGroup(g);
+                    map.put("ReturnType", "1001");
+                    map.put("GroupName", groupName);
                 }
             }
             return map;
@@ -131,17 +135,22 @@ public class GroupController {
     public Map<String,Object> getGroupList(HttpServletRequest request) {
         Map<String,Object> map=new HashMap<String, Object>();
         try {
-            //0-获得参数
+            //0-获取参数
             Map<String, Object> m=MobileUtils.getDataFromRequest(request);
             if (m==null||m.size()==0) {
                 map.put("ReturnType", "0000");
-                map.put("Message", "无法获得需要的参数");
+                map.put("Message", "无法获取需要的参数");
                 return map;
             }
             MobileParam mp=MobileUtils.getMobileParam(m);
             SessionKey sk=(mp==null?null:mp.getSessionKey());
-            //1-得到用户Id
-            String userId=(String)m.get("UserId");
+            if (sk==null) {
+                map.put("ReturnType", "0000");
+                map.put("Message", "无法获取设备Id(IMEI)");
+                return map;
+            }
+            //1-获取UserId，并处理访问
+            String userId=null;
             if (sk!=null) {
                 map.put("SessionId", sk.getSessionId());
                 MobileSession ms=smm.getSession(sk);
@@ -149,40 +158,38 @@ public class GroupController {
                     ms=new MobileSession(sk);
                     smm.addOneSession(ms);
                 } else {
-                    if (StringUtils.isNullOrEmptyOrSpace(userId)) {
-                        userId=sk.getSessionId();
-                        if (userId.length()!=12) {
-                            userId=null;
-                            User u = (User)ms.getAttribute("user");
-                            if (u!=null) userId = u.getUserId();
-                        }
-                    }
                     ms.access();
+                    if (sk.isUserSession()) userId=sk.getUserId();
+                    else {
+                        User u=(User)ms.getAttribute("user");
+                        if (u!=null) userId=u.getUserId();
+                        
+                    }
                 }
             }
-            //2-得到用户组
             if (StringUtils.isNullOrEmptyOrSpace(userId)) {
                 map.put("ReturnType", "1002");
                 map.put("Message", "无法获取用户Id");
-            } else {
-                List<Group> gl=groupService.getGroupsByUserId(userId);
-                List<Map<String, Object>> rgl=new ArrayList<Map<String, Object>>();
-                if (gl!=null&&gl.size()>0) {
-                    Map<String, Object> gm;
-                    for (Group g:gl) {
-                        gm=new HashMap<String, Object>();
-                        gm.put("GroupId", g.getGroupId());
-                        gm.put("GroupName", g.getGroupName());
-                        gm.put("GroupCount", g.getGroupCount());
-                        gm.put("GroupImg", "images/group.png");
-                        rgl.add(gm);
-                    }
-                    map.put("ReturnType", "1001");
-                    map.put("GroupList", rgl);
-                } else {
-                    map.put("ReturnType", "1011");
-                    map.put("Message", "无所属用户组");
+                return map;
+            }
+            //2-得到用户组
+            List<Group> gl=groupService.getGroupsByUserId(userId);
+            List<Map<String, Object>> rgl=new ArrayList<Map<String, Object>>();
+            if (gl!=null&&gl.size()>0) {
+                Map<String, Object> gm;
+                for (Group g:gl) {
+                    gm=new HashMap<String, Object>();
+                    gm.put("GroupId", g.getGroupId());
+                    gm.put("GroupName", g.getGroupName());
+                    gm.put("GroupCount", g.getGroupCount());
+                    gm.put("GroupImg", "images/group.png");
+                    rgl.add(gm);
                 }
+                map.put("ReturnType", "1001");
+                map.put("GroupList", rgl);
+            } else {
+                map.put("ReturnType", "1011");
+                map.put("Message", "无所属用户组");
             }
             return map;
         } catch(Exception e) {

@@ -1,8 +1,8 @@
-package com.woting.mobile.session.model;
+package com.woting.mobile.model;
 
 import java.io.Serializable;
 
-import com.spiritdata.framework.util.StringUtils;
+import com.woting.mobile.MobileUtils;
 
 /**
  * 会话key，包括设备ID和用户Id
@@ -12,7 +12,7 @@ public class SessionKey implements Serializable {
     private static final long serialVersionUID = 8584805045595806786L;
 
     private String mobileId; //设备Id，IMEI
-    private String userId; //用户Id，若未登录，则用户Id为空
+    private String userId; //用户Id，若未登录，则用户Id为IMEI
 
     public String getMobileId() {
         return mobileId;
@@ -20,6 +20,7 @@ public class SessionKey implements Serializable {
     public void setMobileId(String mobileId) {
         this.mobileId = mobileId;
     }
+
     public String getUserId() {
         return userId;
     }
@@ -31,13 +32,13 @@ public class SessionKey implements Serializable {
      * 是否是用户Session，是用户登录成功后的Sessin
      */
     public boolean isUserSession() {
-        return (this.userId!=null);
+        return MobileUtils.isValidUserId(this.userId);
     }
     /**
      * 是否是设备Session，是用户未登录时的Sessin
      */
     public boolean isMobileSession() {
-        return (this.userId==null);
+        return !MobileUtils.isValidUserId(this.userId);
     }
 
     @Override
@@ -52,10 +53,10 @@ public class SessionKey implements Serializable {
     }
 
     /**
-     * 获得SessionId，若userId==null,则SessionId=IMEI,否则SessionId=userId
+     * 获得SessionId，SessionId就是UserId
      * @return
      */
     public String getSessionId() {
-        return (StringUtils.isNullOrEmptyOrSpace(this.userId)?this.mobileId:this.userId);
+        return this.userId;
     }
 }

@@ -19,7 +19,7 @@ import com.woting.mobile.MobileUtils;
 import com.woting.mobile.model.MobileParam;
 import com.woting.mobile.session.mem.SessionMemoryManage;
 import com.woting.mobile.session.model.MobileSession;
-import com.woting.mobile.session.model.SessionKey;
+import com.woting.mobile.model.SessionKey;
 import com.woting.passport.UGA.persistence.pojo.User;
 import com.woting.passport.UGA.service.UserService;
 import com.woting.passport.login.persistence.pojo.MobileUsed;
@@ -57,10 +57,9 @@ public class CommonController {
             }
             MobileParam mp=MobileUtils.getMobileParam(m);
             SessionKey sk=(mp==null?null:mp.getSessionKey());
-            //1-没有IMEI，按未登录处理
             if (sk==null) {
                 map.put("ReturnType", "0000");
-                map.put("Message", "无法获取需要的参数——手机串号");
+                map.put("Message", "无法获取设备Id(IMEI)");
                 return map;
             }
             smm.expireAllSessionByIMEI(sk.getMobileId()); //作废所有imei对应的Session

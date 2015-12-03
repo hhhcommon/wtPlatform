@@ -5,7 +5,7 @@ import org.apache.log4j.Logger;
 import com.spiritdata.framework.util.JsonUtils;
 import com.spiritdata.framework.util.StringUtils;
 import com.woting.mobile.session.model.MobileSession;
-import com.woting.mobile.session.model.SessionKey;
+import com.woting.mobile.model.SessionKey;
 import com.woting.passport.UGA.persistence.pojo.User;
 
 /**

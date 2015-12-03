@@ -62,15 +62,15 @@
   <!-- 获得好友列表 -->
   <select id="getFriends" resultMap="userMap" parameterType="java.util.Map">
     select <include refid="Base_Column_List_A"/> from plat_User a, vWt_Friend_Rel b
-    where a.id=b.aUserId
+    where a.id=b.bUserId and b.aUserId='${userId}'
     order by b.inviteTime desc
     <if test="orderByClause!=null">order by ${orderByClause}</if>
   </select>
   <!-- 获得陌生人列表 -->
   <select id="getStrangers" resultMap="userMap" parameterType="java.util.Map">
     select <include refid="Base_Column_List_A"/> from plat_User a
-    left join vWt_Friend_Rel b on a.id=b.aUserId
-    where b.aUserId is null and a.id!='${userId}' and (
+    left join (select distinct aUserId from vWt_Friend_Rel) b on a.id=b.aUserId
+    where a.id!='${userId}' and (
       a.loginName like '%${searchStr}%'
       or a.mailAddress like '%${searchStr}%'
       or a.mainPhoneNum like '%${searchStr}%'

@@ -15,7 +15,7 @@ import com.woting.mobile.MobileUtils;
 import com.woting.mobile.model.MobileParam;
 import com.woting.mobile.session.mem.SessionMemoryManage;
 import com.woting.mobile.session.model.MobileSession;
-import com.woting.mobile.session.model.SessionKey;
+import com.woting.mobile.model.SessionKey;
 
 @Controller
 @RequestMapping(value="/broadcast/")

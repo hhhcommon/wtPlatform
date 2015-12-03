@@ -75,15 +75,16 @@ public class AppOpinionService {
                 List<AppReOpinionPo> rol = this.reOpinionDao.queryForList("getListByUserId", param);
                 if (rol!=null&&rol.size()>0) {
                     int i=0;
-                    AppReOpinionPo arop;
+                    AppReOpinionPo arop=rol.get(i);
                     for (AppOpinionPo op: ol) {
                         item=new AppOpinion();
                         item.buildFromPo(op);
-                        arop=rol.get(i);
-                        while (arop.getOpinionId().equals(op.getId())) {
-                            item.addOneRe(arop);
-                            if (++i==rol.size()) break;
-                            arop=rol.get(i);
+                        if (i<rol.size()) {
+                            while (arop.getOpinionId().equals(op.getId())) {
+                                item.addOneRe(arop);
+                                if (++i==rol.size()) break;
+                                arop=rol.get(i);
+                            }
                         }
                         ret.add(item);
                         

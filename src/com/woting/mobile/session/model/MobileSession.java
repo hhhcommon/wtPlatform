@@ -3,6 +3,7 @@ package com.woting.mobile.session.model;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import com.woting.mobile.model.SessionKey;
 
 /**
  * 移动端会话

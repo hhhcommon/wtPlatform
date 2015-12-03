@@ -21,7 +21,7 @@ import com.woting.mobile.MobileUtils;
 import com.woting.mobile.model.MobileParam;
 import com.woting.mobile.session.mem.SessionMemoryManage;
 import com.woting.mobile.session.model.MobileSession;
-import com.woting.mobile.session.model.SessionKey;
+import com.woting.mobile.model.SessionKey;
 import com.woting.passport.UGA.persistence.pojo.User;
 
 @Controller
@@ -31,9 +31,14 @@ public class OpinionController {
     private AppOpinionService opinionsService;
     private SessionMemoryManage smm=SessionMemoryManage.getInstance();
 
+    /**
+     * 提交所提意见
+     * @param request
+     * @return
+     */
     @RequestMapping(value="commit.do")
     @ResponseBody
-    public Map<String,Object> getVersion(HttpServletRequest request) {
+    public Map<String,Object> commit(HttpServletRequest request) {
         Map<String,Object> map=new HashMap<String, Object>();
         try {
             //0-获取参数
@@ -51,20 +56,20 @@ public class OpinionController {
                 return map;
             }
             //1-获取UserId，并处理访问
-            String userId=(String)m.get("UserId");
-            map.put("SessionId", sk.getSessionId());
-            MobileSession ms=smm.getSession(sk);
-            if (ms==null) {
-                ms=new MobileSession(sk);
-                smm.addOneSession(ms);
-            } else {
-                ms.access();
-                if (StringUtils.isNullOrEmptyOrSpace(userId)) {
-                    userId=sk.getSessionId();
-                    if (userId.length()!=12) {
-                        userId=null;
+            String userId=null;
+            if (sk!=null) {
+                map.put("SessionId", sk.getSessionId());
+                MobileSession ms=smm.getSession(sk);
+                if (ms==null) {
+                    ms=new MobileSession(sk);
+                    smm.addOneSession(ms);
+                } else {
+                    ms.access();
+                    if (sk.isUserSession()) userId=sk.getUserId();
+                    else {
                         User u=(User)ms.getAttribute("user");
                         if (u!=null) userId=u.getUserId();
+                        
                     }
                 }
             }
@@ -125,20 +130,20 @@ public class OpinionController {
                 return map;
             }
             //1-获取UserId，并处理访问
-            String userId=(String)m.get("UserId");
-            map.put("SessionId", sk.getSessionId());
-            MobileSession ms=smm.getSession(sk);
-            if (ms==null) {
-                ms=new MobileSession(sk);
-                smm.addOneSession(ms);
-            } else {
-                ms.access();
-                if (StringUtils.isNullOrEmptyOrSpace(userId)) {
-                    userId=sk.getSessionId();
-                    if (userId.length()!=12) {
-                        userId=null;
+            String userId=null;
+            if (sk!=null) {
+                map.put("SessionId", sk.getSessionId());
+                MobileSession ms=smm.getSession(sk);
+                if (ms==null) {
+                    ms=new MobileSession(sk);
+                    smm.addOneSession(ms);
+                } else {
+                    ms.access();
+                    if (sk.isUserSession()) userId=sk.getUserId();
+                    else {
                         User u=(User)ms.getAttribute("user");
                         if (u!=null) userId=u.getUserId();
+                        
                     }
                 }
             }

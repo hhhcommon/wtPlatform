@@ -2,8 +2,6 @@ package com.woting.mobile.model;
 
 import com.spiritdata.framework.core.model.BaseObject;
 import com.spiritdata.framework.util.StringUtils;
-import com.woting.mobile.session.model.SessionKey;
-
 /**
  * 移动端公共参数，包括：<br/>
  * <pre>
@@ -74,10 +72,10 @@ public class MobileParam extends BaseObject {
      * @return
      */
     public SessionKey getSessionKey() {
-        if (StringUtils.isNullOrEmptyOrSpace(this.getImei())) return null;
+        if (StringUtils.isNullOrEmptyOrSpace(this.imei)) return null;
         SessionKey sk = new SessionKey();
         sk.setMobileId(this.imei);
-        sk.setUserId(this.userId);
+        sk.setUserId(StringUtils.isNullOrEmptyOrSpace(this.userId)?this.imei:this.userId);
         return sk;
     }
 }

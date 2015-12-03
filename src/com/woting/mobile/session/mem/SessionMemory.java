@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.woting.mobile.session.MobileSessionConfig;
 import com.woting.mobile.session.model.MobileSession;
-import com.woting.mobile.session.model.SessionKey;
+import com.woting.mobile.model.SessionKey;
 
 public class SessionMemory {
     //java的占位单例模式===begin

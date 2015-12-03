@@ -21,7 +21,7 @@ import com.woting.mobile.MobileUtils;
 import com.woting.mobile.model.MobileParam;
 import com.woting.mobile.session.mem.SessionMemoryManage;
 import com.woting.mobile.session.model.MobileSession;
-import com.woting.mobile.session.model.SessionKey;
+import com.woting.mobile.model.SessionKey;
 import com.woting.passport.UGA.persistence.pojo.User;
 import com.woting.passport.login.persistence.pojo.MobileUsed;
 import com.woting.passport.login.service.MobileUsedService;
@@ -207,7 +207,7 @@ public class PassportController {
             MobileParam mp=MobileUtils.getMobileParam(m);
             SessionKey sk=(mp==null?null:mp.getSessionKey());
             //2-处理
-            String userId=(String)m.get("UserId");
+            String userId=null;
             if (sk!=null) {
                 //2.1-获取UserId
                 map.put("SessionId", sk.getSessionId());
@@ -216,13 +216,11 @@ public class PassportController {
                     ms=new MobileSession(sk);
                     smm.addOneSession(ms);
                 } else {
-                    if (StringUtils.isNullOrEmptyOrSpace(userId)) {
-                        userId=sk.getSessionId();
-                        if (userId.length()!=12) {
-                            userId=null;
-                            User u = (User)ms.getAttribute("user");
-                            if (u!=null) userId = u.getUserId();
-                        }
+                    if (sk.isUserSession()) userId=sk.getUserId();
+                    else {
+                        User u=(User)ms.getAttribute("user");
+                        if (u!=null) userId=u.getUserId();
+                        
                     }
                     ms.access();
                     ms.clearBody();
@@ -264,28 +262,36 @@ public class PassportController {
             }
             MobileParam mp=MobileUtils.getMobileParam(m);
             SessionKey sk=(mp==null?null:mp.getSessionKey());
-            //2-处理
+            if (sk==null) {
+                map.put("ReturnType", "0000");
+                map.put("Message", "无法获取设备Id(IMEI)");
+                return map;
+            }
+            //1-获取UserId
             User u=null;
-            String userId=(String)m.get("UserId");
+            String userId=null;
             if (sk!=null) {
-                //2.1-获取UserId
                 map.put("SessionId", sk.getSessionId());
                 MobileSession ms=smm.getSession(sk);
                 if (ms==null) {
                     ms=new MobileSession(sk);
                     smm.addOneSession(ms);
                 } else {
-                    if (StringUtils.isNullOrEmptyOrSpace(userId)) {
-                        userId=sk.getSessionId();
-                        if (userId.length()!=12) {
-                            userId=null;
-                            u = (User)ms.getAttribute("user");
-                            if (u!=null) userId = u.getUserId();
-                        }
-                    }
                     ms.access();
+                    if (sk.isUserSession()) userId=sk.getUserId();
+                    else {
+                        u=(User)ms.getAttribute("user");
+                        if (u!=null) userId=u.getUserId();
+                        
+                    }
                 }
             }
+            if (StringUtils.isNullOrEmptyOrSpace(userId)) {
+                map.put("ReturnType", "1002");
+                map.put("Message", "无法获取用户Id");
+                return map;
+            }
+
             String phoneNum=(String)m.get("PhoneNum");
             String mail=(String)m.get("MailAddr");
             if (StringUtils.isNullOrEmptyOrSpace(phoneNum)&&StringUtils.isNullOrEmptyOrSpace(mail)) {
@@ -293,23 +299,18 @@ public class PassportController {
                 map.put("Message", "邮箱或手机号码不能同时为空");
                 return map;
             }
-            if (StringUtils.isNullOrEmptyOrSpace(userId)) {
+            if (u==null) u=userService.getUserById(userId);
+            if (u==null) {
                 map.put("ReturnType", "1002");
-                map.put("Message", "无法获取用户Id");
+                map.put("Message", "无法获取用户Id为["+userId+"]的用户");
             } else {
-                if (u==null) u=userService.getUserById(userId);
-                if (u==null) {
-                    map.put("ReturnType", "1002");
-                    map.put("Message", "无法获取用户Id为["+userId+"]的用户");
-                } else {
-                    if (!StringUtils.isNullOrEmptyOrSpace(phoneNum)) u.setMainPhoneNum(phoneNum);
-                    if (!StringUtils.isNullOrEmptyOrSpace(mail)) u.setMailAddress(mail);
-                    int retFlag=userService.updateUser(u);
-                    if (retFlag==1) map.put("ReturnType", "1001");
-                    else {
-                        map.put("ReturnType", "1004");
-                        map.put("Message", "存储账户绑定信息失败");
-                    }
+                if (!StringUtils.isNullOrEmptyOrSpace(phoneNum)) u.setMainPhoneNum(phoneNum);
+                if (!StringUtils.isNullOrEmptyOrSpace(mail)) u.setMailAddress(mail);
+                int retFlag=userService.updateUser(u);
+                if (retFlag==1) map.put("ReturnType", "1001");
+                else {
+                    map.put("ReturnType", "1004");
+                    map.put("Message", "存储账户绑定信息失败");
                 }
             }
             return map;
@@ -337,28 +338,36 @@ public class PassportController {
             }
             MobileParam mp=MobileUtils.getMobileParam(m);
             SessionKey sk=(mp==null?null:mp.getSessionKey());
-            //2-处理
+            if (sk==null) {
+                map.put("ReturnType", "0000");
+                map.put("Message", "无法获取设备Id(IMEI)");
+                return map;
+            }
+            //1-获取UserId
             User u=null;
-            String userId=(String)m.get("UserId");
+            String userId=null;
             if (sk!=null) {
-                //2.1-获取UserId
                 map.put("SessionId", sk.getSessionId());
                 MobileSession ms=smm.getSession(sk);
                 if (ms==null) {
                     ms=new MobileSession(sk);
                     smm.addOneSession(ms);
                 } else {
-                    if (StringUtils.isNullOrEmptyOrSpace(userId)) {
-                        userId=sk.getSessionId();
-                        if (userId.length()!=12) {
-                            userId=null;
-                            u = (User)ms.getAttribute("user");
-                            if (u!=null) userId = u.getUserId();
-                        }
-                    }
                     ms.access();
+                    if (sk.isUserSession()) userId=sk.getUserId();
+                    else {
+                        u=(User)ms.getAttribute("user");
+                        if (u!=null) userId=u.getUserId();
+                        
+                    }
                 }
             }
+            if (StringUtils.isNullOrEmptyOrSpace(userId)) {
+                map.put("ReturnType", "1002");
+                map.put("Message", "无法获取用户Id");
+                return map;
+            }
+            //2-获取其他参数
             String oldPwd=(String)m.get("OldPassword");
             String newPwd=(String)m.get("NewPassword");
             String errMsg="";
@@ -375,27 +384,22 @@ public class PassportController {
                 map.put("Message", "新旧密码不能相同");
                 return map;
             }
-            if (StringUtils.isNullOrEmptyOrSpace(userId)) {
+            if (u==null) u=userService.getUserById(userId);
+            if (u==null) {
                 map.put("ReturnType", "1002");
-                map.put("Message", "无法获取用户Id");
+                map.put("Message", "无法获取用户Id为["+userId+"]的用户");
             } else {
-                if (u==null) u=userService.getUserById(userId);
-                if (u==null) {
-                    map.put("ReturnType", "1002");
-                    map.put("Message", "无法获取用户Id为["+userId+"]的用户");
-                } else {
-                    if (u.getPassword().equals(oldPwd)) {
-                        u.setPassword(newPwd);
-                        int retFlag=userService.updateUser(u);
-                        if (retFlag==1) map.put("ReturnType", "1001");
-                        else {
-                            map.put("ReturnType", "1006");
-                            map.put("Message", "存储新密码失败");
-                        }
-                    } else {
-                        map.put("ReturnType", "1005");
-                        map.put("Message", "旧密码不匹配");
+                if (u.getPassword().equals(oldPwd)) {
+                    u.setPassword(newPwd);
+                    int retFlag=userService.updateUser(u);
+                    if (retFlag==1) map.put("ReturnType", "1001");
+                    else {
+                        map.put("ReturnType", "1006");
+                        map.put("Message", "存储新密码失败");
                     }
+                } else {
+                    map.put("ReturnType", "1005");
+                    map.put("Message", "旧密码不匹配");
                 }
             }
             return map;

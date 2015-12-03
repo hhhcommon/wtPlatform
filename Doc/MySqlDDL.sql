@@ -153,7 +153,7 @@ DROP TABLE IF EXISTS wt_Broadcast;
 CREATE TABLE wt_Broadcast (
   id          varchar(32)   NOT NULL  COMMENT 'uuid(主键)',
   bcTitle     varchar(100)  NOT NULL  COMMENT '电台名称',
-  bcGroup     varchar(100)  NOT NULL  COMMENT '电台所属集团名称',
+  bcPublisher varchar(100)  NOT NULL  COMMENT '电台所属集团名称',
   frequency   varchar(100)  NOT NULL  COMMENT '电台频段，主频段',
   bcImg       varchar(100)            COMMENT '电台图标',
   bcSource    varchar(100)            COMMENT '电台来源',
