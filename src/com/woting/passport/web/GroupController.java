@@ -17,7 +17,7 @@ import com.woting.mobile.MobileUtils;
 import com.woting.mobile.model.MobileParam;
 import com.woting.mobile.session.mem.SessionMemoryManage;
 import com.woting.mobile.session.model.MobileSession;
-import com.woting.mobile.model.SessionKey;
+import com.woting.mobile.model.MobileKey;
 import com.woting.passport.UGA.persistence.pojo.Group;
 import com.woting.passport.UGA.persistence.pojo.User;
 import com.woting.passport.UGA.service.GroupService;
@@ -49,7 +49,7 @@ public class GroupController {
                 return map;
             }
             MobileParam mp=MobileUtils.getMobileParam(m);
-            SessionKey sk=(mp==null?null:mp.getSessionKey());
+            MobileKey sk=(mp==null?null:mp.getSessionKey());
             if (sk==null) {
                 map.put("ReturnType", "0000");
                 map.put("Message", "无法获取设备Id(IMEI)");
@@ -143,7 +143,7 @@ public class GroupController {
                 return map;
             }
             MobileParam mp=MobileUtils.getMobileParam(m);
-            SessionKey sk=(mp==null?null:mp.getSessionKey());
+            MobileKey sk=(mp==null?null:mp.getSessionKey());
             if (sk==null) {
                 map.put("ReturnType", "0000");
                 map.put("Message", "无法获取设备Id(IMEI)");
@@ -215,7 +215,7 @@ public class GroupController {
                 return map;
             }
             MobileParam mp=MobileUtils.getMobileParam(m);
-            SessionKey sk=(mp==null?null:mp.getSessionKey());
+            MobileKey sk=(mp==null?null:mp.getSessionKey());
             //1-处理Session
             if (sk!=null) {
                 map.put("SessionId", sk.getSessionId());

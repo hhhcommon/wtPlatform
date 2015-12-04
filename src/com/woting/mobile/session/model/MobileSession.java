@@ -3,7 +3,7 @@ package com.woting.mobile.session.model;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import com.woting.mobile.model.SessionKey;
+import com.woting.mobile.model.MobileKey;
 
 /**
  * 移动端会话
@@ -12,13 +12,13 @@ import com.woting.mobile.model.SessionKey;
 public class MobileSession implements Serializable {
     private static final long serialVersionUID = 7375288306760265060L;
 
-    private SessionKey key; //会话的键值
+    private MobileKey key; //会话的键值
     private Map<String, Object> body=new ConcurrentHashMap<String, Object>(); //会话数据体，会话的上下文数据
 
-    public SessionKey getKey() {
+    public MobileKey getKey() {
         return key;
     }
-    public void setKey(SessionKey key) {
+    public void setKey(MobileKey key) {
         this.key = key;
     }
     public Map<String, Object> getBody() {
@@ -32,7 +32,7 @@ public class MobileSession implements Serializable {
     protected volatile long lastAccessedTime = this.creationTime; //最后访问时间
     protected volatile transient boolean expiring = false; //是否过期
 
-    public MobileSession(SessionKey key) {
+    public MobileSession(MobileKey key) {
         this.key = key;
     }
 

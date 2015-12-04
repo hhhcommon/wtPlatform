@@ -5,8 +5,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.woting.mobile.session.MobileSessionConfig;
 import com.woting.mobile.session.model.MobileSession;
-import com.woting.mobile.model.SessionKey;
+import com.woting.mobile.model.MobileKey;
 
+/**
+ * Session在内存中的对象
+ * @author wanghui
+ */
 public class SessionMemory {
     //java的占位单例模式===begin
     private static class InstanceHolder {
@@ -18,7 +22,7 @@ public class SessionMemory {
     //java的占位单例模式===end
 
     //移动会话Map
-    protected Map<SessionKey, MobileSession> mSessionMap = null;
+    protected Map<MobileKey, MobileSession> mSessionMap = null;
     //移动会话的配置信息
     protected MobileSessionConfig myConfig = null;
 
@@ -28,7 +32,7 @@ public class SessionMemory {
      */
     public void init(MobileSessionConfig msc) {
         myConfig=(msc==null?new MobileSessionConfig():msc);
-        mSessionMap=new ConcurrentHashMap<SessionKey, MobileSession>();
+        mSessionMap=new ConcurrentHashMap<MobileKey, MobileSession>();
     }
 
     /**
