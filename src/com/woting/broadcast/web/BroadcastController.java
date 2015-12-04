@@ -15,7 +15,7 @@ import com.woting.mobile.MobileUtils;
 import com.woting.mobile.model.MobileParam;
 import com.woting.mobile.session.mem.SessionMemoryManage;
 import com.woting.mobile.session.model.MobileSession;
-import com.woting.mobile.model.SessionKey;
+import com.woting.mobile.model.MobileKey;
 
 @Controller
 @RequestMapping(value="/broadcast/")
@@ -31,7 +31,7 @@ public class BroadcastController {
             Map<String, Object> m=MobileUtils.getDataFromRequest(request);
             if (m!=null&&m.size()>0) {
                 MobileParam mp=MobileUtils.getMobileParam(m);
-                SessionKey sk=(mp==null?null:mp.getSessionKey());
+                MobileKey sk=(mp==null?null:mp.getSessionKey());
                 if (sk!=null){
                     map.put("SessionId", sk.getSessionId());
                     MobileSession ms=smm.getSession(sk);
@@ -166,7 +166,7 @@ public class BroadcastController {
             Map<String, Object> m=MobileUtils.getDataFromRequest(request);
             if (m!=null&&m.size()>0) {
                 MobileParam mp=MobileUtils.getMobileParam(m);
-                SessionKey sk=(mp==null?null:mp.getSessionKey());
+                MobileKey sk=(mp==null?null:mp.getSessionKey());
                 if (sk!=null){
                     map.put("SessionId", sk.getSessionId());
                     MobileSession ms=smm.getSession(sk);
@@ -271,7 +271,7 @@ public class BroadcastController {
             Map<String, Object> m=MobileUtils.getDataFromRequest(request);
             if (m!=null&&m.size()>0) {
                 MobileParam mp=MobileUtils.getMobileParam(m);
-                SessionKey sk=(mp==null?null:mp.getSessionKey());
+                MobileKey sk=(mp==null?null:mp.getSessionKey());
                 if (sk!=null){
                     map.put("SessionId", sk.getSessionId());
                     MobileSession ms=smm.getSession(sk);

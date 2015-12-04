@@ -17,7 +17,7 @@ import com.woting.mobile.session.mem.SessionMemory;
 public class SessionListener extends Thread {
     private static MobileSessionConfig msc=null;
 
-    public static void Beginning(MobileSessionConfig msc) {
+    public static void begin(MobileSessionConfig msc) {
         SessionListener.msc=msc;
         SessionListener sl = new SessionListener();
         sl.start();

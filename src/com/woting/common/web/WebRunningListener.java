@@ -5,6 +5,8 @@ import javax.servlet.ServletContextListener;
 
 import org.apache.log4j.Logger;
 
+import com.woting.mobile.push.PushConfig;
+import com.woting.mobile.push.monitor.PushListener;
 import com.woting.mobile.session.MobileSessionConfig;
 import com.woting.mobile.session.monitor.SessionListener;
 
@@ -17,7 +19,9 @@ public class WebRunningListener implements ServletContextListener {
         try {
             //移动会话Session启动
             MobileSessionConfig msc = new MobileSessionConfig();
-            SessionListener.Beginning(msc);
+            SessionListener.begin(msc);
+            PushConfig pc = new PushConfig();
+            PushListener.begin(pc);
         } catch(Exception e) {
             logger.error("Web运行时监听启动异常：",e);
         }

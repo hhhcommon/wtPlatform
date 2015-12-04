@@ -8,7 +8,7 @@ import com.woting.mobile.MobileUtils;
  * 会话key，包括设备ID和用户Id
  * @author wh
  */
-public class SessionKey implements Serializable {
+public class MobileKey implements Serializable {
     private static final long serialVersionUID = 8584805045595806786L;
 
     private String mobileId; //设备Id，IMEI
@@ -43,10 +43,10 @@ public class SessionKey implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj==null||!(obj instanceof SessionKey)) return false;
-        if (this.mobileId.equals(((SessionKey)obj).getMobileId())){
-            if (this.userId==null&&((SessionKey)obj).getUserId()==null) return true;
-            else if (this.userId!=null&&this.userId.equals(((SessionKey)obj).getUserId())) return true;
+        if (obj==null||!(obj instanceof MobileKey)) return false;
+        if (this.mobileId.equals(((MobileKey)obj).getMobileId())){
+            if (this.userId==null&&((MobileKey)obj).getUserId()==null) return true;
+            else if (this.userId!=null&&this.userId.equals(((MobileKey)obj).getUserId())) return true;
             else return false;
         }
         return false;
