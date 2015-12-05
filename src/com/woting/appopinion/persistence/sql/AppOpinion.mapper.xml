@@ -47,20 +47,24 @@
   <select id="getDuplicates" resultMap="opinionMap" parameterType="java.util.Map">
     select <include refid="Base_Column_List"/> from wt_AppOpinion
     <where>
-      <trim prefix="(" suffix=")" prefixOverrides="and">
+      <trim prefixOverrides="and">
         <if test="imei!=null"> and imei=#{imei,jdbcType=VARCHAR}</if>
         <if test="userId!=null"> and userId=#{userId,jdbcType=VARCHAR}</if>
-        <if test="userId==null"> and userId is null</if>
+        <if test="userId==null"> and (userId is null or userId='')</if>
         <if test="opinion!=null"> and opinion=#{opinion,jdbcType=VARCHAR}</if>
       </trim>
     </where>
   </select>
   <!-- 获得列表，根据用户Id(提意见的人) -->
   <select id="getListByUserId" resultMap="opinionMap" parameterType="java.util.Map">
-    select <include refid="Base_Column_List"/> from wt_AppOpinion where 1=1
-    <if test="userId!=null"> and userId=#{userId,jdbcType=VARCHAR}</if>
-    <if test="userId==null and imei!=null"> and userId is null and imei=#{imei,jdbcType=VARCHAR}</if>
-    <if test="userId==null and imei==null"> and 1=2</if>
+    select <include refid="Base_Column_List"/> from wt_AppOpinion
+    <where>
+      <trim prefixOverrides="and">
+        <if test="imei!=null"> and imei=#{imei,jdbcType=VARCHAR}</if>
+        <if test="userId!=null"> and userId=#{userId,jdbcType=VARCHAR}</if>
+        <if test="userId==null"> and (userId is null or userId='')</if>
+      </trim>
+    </where>
     order by cTime desc
   </select>
 

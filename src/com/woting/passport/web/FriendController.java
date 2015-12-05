@@ -53,8 +53,8 @@ public class FriendController {
                 map.put("Message", "无法获取设备Id(IMEI)");
                 return map;
             }
-            //1-获取UserId
-            String userId=null;
+            //1-获取UserId，并处理访问
+            String userId=sk.isUserSession()?sk.getUserId():null;
             if (sk!=null) {
                 map.put("SessionId", sk.getSessionId());
                 MobileSession ms=smm.getSession(sk);
@@ -63,11 +63,9 @@ public class FriendController {
                     smm.addOneSession(ms);
                 } else {
                     ms.access();
-                    if (sk.isUserSession()) userId=sk.getUserId();
-                    else {
+                    if (userId==null) {
                         User u=(User)ms.getAttribute("user");
                         if (u!=null) userId=u.getUserId();
-                        
                     }
                 }
             }
@@ -140,8 +138,8 @@ public class FriendController {
                 map.put("Message", "无法获取设备Id(IMEI)");
                 return map;
             }
-            //1-获取UserId
-            String userId=null;
+            //1-获取UserId，并处理访问
+            String userId=sk.isUserSession()?sk.getUserId():null;
             if (sk!=null) {
                 map.put("SessionId", sk.getSessionId());
                 MobileSession ms=smm.getSession(sk);
@@ -150,11 +148,9 @@ public class FriendController {
                     smm.addOneSession(ms);
                 } else {
                     ms.access();
-                    if (sk.isUserSession()) userId=sk.getUserId();
-                    else {
+                    if (userId==null) {
                         User u=(User)ms.getAttribute("user");
                         if (u!=null) userId=u.getUserId();
-                        
                     }
                 }
             }
@@ -218,7 +214,7 @@ public class FriendController {
                 return map;
             }
             //1-获取UserId，并处理访问
-            String userId=null;
+            String userId=sk.isUserSession()?sk.getUserId():null;
             if (sk!=null) {
                 map.put("SessionId", sk.getSessionId());
                 MobileSession ms=smm.getSession(sk);
@@ -227,11 +223,9 @@ public class FriendController {
                     smm.addOneSession(ms);
                 } else {
                     ms.access();
-                    if (sk.isUserSession()) userId=sk.getUserId();
-                    else {
+                    if (userId==null) {
                         User u=(User)ms.getAttribute("user");
                         if (u!=null) userId=u.getUserId();
-                        
                     }
                 }
             }
@@ -295,7 +289,7 @@ public class FriendController {
                 return map;
             }
             //1-获取UserId，并处理访问
-            String userId=null;
+            String userId=sk.isUserSession()?sk.getUserId():null;
             if (sk!=null) {
                 map.put("SessionId", sk.getSessionId());
                 MobileSession ms=smm.getSession(sk);
@@ -304,11 +298,9 @@ public class FriendController {
                     smm.addOneSession(ms);
                 } else {
                     ms.access();
-                    if (sk.isUserSession()) userId=sk.getUserId();
-                    else {
+                    if (userId==null) {
                         User u=(User)ms.getAttribute("user");
                         if (u!=null) userId=u.getUserId();
-                        
                     }
                 }
             }
@@ -381,7 +373,7 @@ public class FriendController {
                 return map;
             }
             //1-获取UserId，并处理访问
-            String userId=null;
+            String userId=sk.isUserSession()?sk.getUserId():null;
             if (sk!=null) {
                 map.put("SessionId", sk.getSessionId());
                 MobileSession ms=smm.getSession(sk);
@@ -390,11 +382,9 @@ public class FriendController {
                     smm.addOneSession(ms);
                 } else {
                     ms.access();
-                    if (sk.isUserSession()) userId=sk.getUserId();
-                    else {
+                    if (userId==null) {
                         User u=(User)ms.getAttribute("user");
                         if (u!=null) userId=u.getUserId();
-                        
                     }
                 }
             }

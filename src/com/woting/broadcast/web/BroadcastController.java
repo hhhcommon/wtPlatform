@@ -39,7 +39,6 @@ public class BroadcastController {
                 }
                 //获得SessionId，从而得到用户信息，获得偏好信息
             }
-            //1-获取版本
             List<Map<String, Object>> ml = new ArrayList<Map<String, Object>>();
             List<Map<String, Object>> sl=null;
             Map<String, Object> bcClass=null, bcItem=null;

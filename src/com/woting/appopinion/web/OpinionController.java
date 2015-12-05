@@ -56,7 +56,7 @@ public class OpinionController {
                 return map;
             }
             //1-获取UserId，并处理访问
-            String userId=null;
+            String userId=sk.isUserSession()?sk.getUserId():null;
             if (sk!=null) {
                 map.put("SessionId", sk.getSessionId());
                 MobileSession ms=smm.getSession(sk);
@@ -65,11 +65,9 @@ public class OpinionController {
                     smm.addOneSession(ms);
                 } else {
                     ms.access();
-                    if (sk.isUserSession()) userId=sk.getUserId();
-                    else {
+                    if (userId==null) {
                         User u=(User)ms.getAttribute("user");
                         if (u!=null) userId=u.getUserId();
-                        
                     }
                 }
             }
@@ -130,7 +128,7 @@ public class OpinionController {
                 return map;
             }
             //1-获取UserId，并处理访问
-            String userId=null;
+            String userId=sk.isUserSession()?sk.getUserId():null;
             if (sk!=null) {
                 map.put("SessionId", sk.getSessionId());
                 MobileSession ms=smm.getSession(sk);
@@ -139,11 +137,9 @@ public class OpinionController {
                     smm.addOneSession(ms);
                 } else {
                     ms.access();
-                    if (sk.isUserSession()) userId=sk.getUserId();
-                    else {
+                    if (userId==null) {
                         User u=(User)ms.getAttribute("user");
                         if (u!=null) userId=u.getUserId();
-                        
                     }
                 }
             }

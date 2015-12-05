@@ -56,7 +56,7 @@ public class GroupController {
                 return map;
             }
             //1-得到创建者，并处理访问
-            String creator=null;
+            String creator=sk.isUserSession()?sk.getUserId():null;
             if (sk!=null) {
                 map.put("SessionId", sk.getSessionId());
                 MobileSession ms=smm.getSession(sk);
@@ -65,8 +65,7 @@ public class GroupController {
                     smm.addOneSession(ms);
                 } else {
                     ms.access();
-                    if (sk.isUserSession()) creator=sk.getUserId();
-                    else {
+                    if (creator==null) {
                         User u=(User)ms.getAttribute("user");
                         if (u!=null) creator=u.getUserId();
                         
@@ -150,7 +149,7 @@ public class GroupController {
                 return map;
             }
             //1-获取UserId，并处理访问
-            String userId=null;
+            String userId=sk.isUserSession()?sk.getUserId():null;
             if (sk!=null) {
                 map.put("SessionId", sk.getSessionId());
                 MobileSession ms=smm.getSession(sk);
@@ -159,11 +158,9 @@ public class GroupController {
                     smm.addOneSession(ms);
                 } else {
                     ms.access();
-                    if (sk.isUserSession()) userId=sk.getUserId();
-                    else {
+                    if (userId==null) {
                         User u=(User)ms.getAttribute("user");
                         if (u!=null) userId=u.getUserId();
-                        
                     }
                 }
             }

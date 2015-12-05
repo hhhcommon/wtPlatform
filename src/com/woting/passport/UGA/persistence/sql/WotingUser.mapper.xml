@@ -37,7 +37,7 @@
         <if test="userName!=null"> and userName=#{userName,jdbcType=VARCHAR}</if>
         <if test="password!=null"> and password=#{password,jdbcType=VARCHAR}</if>
         <if test="mainPhoneNum!=null"> and mainPhoneNum=#{mainPhoneNum,jdbcType=VARCHAR}</if>
-        <if test="mailAddress!=null"> and mainPhoneNum=#{mainPhoneNum,jdbcType=VARCHAR}</if>
+        <if test="mailAddress!=null"> and mailAddress=#{mailAddress,jdbcType=VARCHAR}</if>
         <if test="userType!=null and userType!=0"> and userType=#{userType,jdbcType=INTEGER}</if>
         <if test="userState!=null"> and userState=#{userState,jdbcType=INTEGER}</if>
         <if test="protraitBig!=null"> and protraitBig=#{protraitBig,jdbcType=VARCHAR}</if>
@@ -102,7 +102,7 @@
       <if test="userName!=null">userName,</if>
       <if test="password!=null">password,</if>
       <if test="mainPhoneNum!=null">mainPhoneNum,</if>
-      <if test="mailAddress!=null">mainPhoneNum,</if>
+      <if test="mailAddress!=null">mailAddress,</if>
       <if test="userType!=null and userType!=0">userType,</if>
       <if test="userState!=null">userState,</if>
       <if test="protraitBig!=null">protraitBig,</if>
@@ -116,7 +116,7 @@
       <if test="userName!=null">#{userName,jdbcType=VARCHAR},</if>
       <if test="password!=null">#{password,jdbcType=VARCHAR},</if>
       <if test="mainPhoneNum!=null">#{mainPhoneNum,jdbcType=VARCHAR},</if>
-      <if test="mailAddress!=null">#{mainPhoneNum,jdbcType=VARCHAR},</if>
+      <if test="mailAddress!=null">#{mailAddress,jdbcType=VARCHAR},</if>
       <if test="userType!=null and userType!=0">#{userType,jdbcType=INTEGER},</if>
       <if test="userState!=null">#{userState,jdbcType=INTEGER},</if>
       <if test="protraitBig!=null">#{protraitBig,jdbcType=VARCHAR},</if>
@@ -133,7 +133,7 @@
       <if test="userName!=null">userName=#{userName,jdbcType=VARCHAR},</if>
       <if test="password!=null">password=#{password,jdbcType=VARCHAR},</if>
       <if test="mainPhoneNum!=null">mainPhoneNum=#{mainPhoneNum,jdbcType=VARCHAR},</if>
-      <if test="mailAddress!=null">mainPhoneNum=#{mainPhoneNum,jdbcType=VARCHAR},</if>
+      <if test="mailAddress!=null">mailAddress=#{mailAddress,jdbcType=VARCHAR},</if>
       <if test="userType!=null and userType!=0">userType=#{userType,jdbcType=INTEGER},</if>
       <if test="userState!=null">userState=#{userState,jdbcType=INTEGER},</if>
       <if test="protraitBig!=null">protraitBig=#{protraitBig,jdbcType=VARCHAR},</if>
