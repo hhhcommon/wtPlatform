@@ -23,7 +23,7 @@ public class ReceiveMemory {
     }
     //java的占位单例模式===end
 
-    private ConcurrentLinkedQueue<byte[]> pureMsgQueue; //总接收队列所有收到的信息都会暂时先放入这个队列中
+    private ConcurrentLinkedQueue<String> pureMsgQueue; //总接收队列所有收到的信息都会暂时先放入这个队列中
 
     private ConcurrentHashMap<String, ConcurrentLinkedQueue<Message>> typeMsgMap; //分类接收队列，不同类型的消息会由不同类去处理
 
@@ -31,7 +31,7 @@ public class ReceiveMemory {
      * 获得原始接收消息队列
      * @return 总接收消息队列
      */
-    public ConcurrentLinkedQueue<byte[]> getPureMsgQueue() {
+    public ConcurrentLinkedQueue<String> getPureMsgQueue() {
         return pureMsgQueue;
     }
 
@@ -40,7 +40,7 @@ public class ReceiveMemory {
      * @param msg 消息，此消息是从底层读取的最原始的消息，采用字节数组
      * @return 若成功插入，返回true，否则返回false，由于总接收队列是无边界的并发链表队列，理论上不会返回false
      */
-    public boolean addPureQueue(byte[] msg) {
+    public boolean addPureQueue(String msg) {
         return this.pureMsgQueue.offer(msg);
     }
 
@@ -48,7 +48,7 @@ public class ReceiveMemory {
      * 从原始接收队列获取消息，并从队列移除该消息
      * @return  消息元素
      */
-    public byte[] pollPureQueue() {
+    public String pollPureQueue() {
         if (this.pureMsgQueue==null) return null;
         return this.pureMsgQueue.poll();
     }
@@ -96,7 +96,7 @@ public class ReceiveMemory {
      * 初始化，创建两个主要的对象
      */
     private ReceiveMemory() {
-        this.pureMsgQueue=new ConcurrentLinkedQueue<byte[]>();
+        this.pureMsgQueue=new ConcurrentLinkedQueue<String>();
         this.typeMsgMap=new ConcurrentHashMap<String, ConcurrentLinkedQueue<Message>>();
     }
 }

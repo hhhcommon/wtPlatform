@@ -19,6 +19,14 @@ public class PushMemoryManage {
     protected ReceiveMemory rm; //接收数据内存结构
     protected SendMemory sm; //发送数据内存结构
 
+    private boolean serverIsRuning=false; //推送服务是否正常运行
+    public boolean isServerIsRuning() {
+        return this.serverIsRuning;
+    }
+    public void setServerIsRuning(boolean serverIsRuning) {
+        this.serverIsRuning = serverIsRuning;
+    }
+
     /*
      * 构造方法，设置消息推送内存结构
      */
@@ -38,5 +46,13 @@ public class PushMemoryManage {
                 if (mq==null||mq.isEmpty()) this.sm.msgMap.remove(sKey);
             }
         }
+    }
+
+    public ReceiveMemory getReceiveMemory() {
+        return this.rm;
+    }
+
+    public SendMemory getSendMemory() {
+        return this.sm;
     }
 }
