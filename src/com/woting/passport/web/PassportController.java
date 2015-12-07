@@ -53,7 +53,7 @@ public class PassportController {
                 return map;
             }
             MobileParam mp=MobileUtils.getMobileParam(m);
-            MobileKey sk=(mp==null?null:mp.getSessionKey());
+            MobileKey sk=(mp==null?null:mp.getMobileKey());
             if (sk!=null) map.put("SessionId", sk.getSessionId());
 
             String ln=(String)m.get("UserName");
@@ -125,7 +125,7 @@ public class PassportController {
                 return map;
             }
             MobileParam mp=MobileUtils.getMobileParam(m);
-            MobileKey sk=(mp==null?null:mp.getSessionKey());
+            MobileKey sk=(mp==null?null:mp.getMobileKey());
             if (sk!=null) map.put("SessionId", sk.getSessionId());
 
             String ln=(String)m.get("UserName");
@@ -205,7 +205,7 @@ public class PassportController {
             }
             System.out.println(smm.Mem2Json());
             MobileParam mp=MobileUtils.getMobileParam(m);
-            MobileKey sk=(mp==null?null:mp.getSessionKey());
+            MobileKey sk=(mp==null?null:mp.getMobileKey());
             //2-处理
             String userId=sk.isUserSession()?sk.getUserId():null;
             if (sk!=null) {
@@ -259,7 +259,7 @@ public class PassportController {
                 return map;
             }
             MobileParam mp=MobileUtils.getMobileParam(m);
-            MobileKey sk=(mp==null?null:mp.getSessionKey());
+            MobileKey sk=(mp==null?null:mp.getMobileKey());
             if (sk==null) {
                 map.put("ReturnType", "0000");
                 map.put("Message", "无法获取设备Id(IMEI)");
@@ -333,7 +333,7 @@ public class PassportController {
                 return map;
             }
             MobileParam mp=MobileUtils.getMobileParam(m);
-            MobileKey sk=(mp==null?null:mp.getSessionKey());
+            MobileKey sk=(mp==null?null:mp.getMobileKey());
             if (sk==null) {
                 map.put("ReturnType", "0000");
                 map.put("Message", "无法获取设备Id(IMEI)");

@@ -1,9 +1,12 @@
 package com.woting.mobile.push.mem;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.woting.mobile.model.MobileKey;
 import com.woting.mobile.push.model.Message;
+import com.woting.mobile.push.model.SendMessageList;
 
 public class PushMemoryManage {
     //java的占位单例模式===begin
@@ -18,6 +21,7 @@ public class PushMemoryManage {
 
     protected ReceiveMemory rm; //接收数据内存结构
     protected SendMemory sm; //发送数据内存结构
+    protected SendedMemory hasSm; //发送数据内存结构
 
     private boolean serverIsRuning=false; //推送服务是否正常运行
     public boolean isServerIsRuning() {
@@ -33,6 +37,7 @@ public class PushMemoryManage {
     private PushMemoryManage() {
         rm=ReceiveMemory.getInstance();
         sm=SendMemory.getInstance();
+        hasSm=SendedMemory.getInstance();
     }
 
     /**
@@ -54,5 +59,32 @@ public class PushMemoryManage {
 
     public SendMemory getSendMemory() {
         return this.sm;
+    }
+
+    /**
+     * 根据设备标识MobileKey(mk)，获得发送消息体，注意，消息体不得多于3条。<br/>
+     * 若有更多需要回传的消息，需通过下次请求给出。
+     * @param mk 设备标识
+     * @return 消息体
+     */
+    public List<Message> getSendMessages(MobileKey mk) {
+        List<Message> retl = new ArrayList<Message>();
+        //从发送队列取一条消息
+        Message m1= sm.pollTypeQueue(mk);
+        if (m1!=null) retl.add(m1);
+        SendMessageList hasSl = hasSm.getSendedMessagList(mk);
+        if (hasSl!=null&&hasSl.size()>0) {
+            int lowerIndex=3-retl.size();
+            if (hasSl.size()<lowerIndex) lowerIndex=hasSl.size();
+            for (int i=0; i<lowerIndex; i++) {
+                retl.add(hasSl.get(i));
+            }
+        }
+        try {
+            if (m1!=null) hasSl.add(m1);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

@@ -71,7 +71,7 @@ public class MobileParam extends BaseObject {
      * 获得对应的SessionKey，若IMEI为空，则返回空
      * @return
      */
-    public MobileKey getSessionKey() {
+    public MobileKey getMobileKey() {
         if (StringUtils.isNullOrEmptyOrSpace(this.imei)) return null;
         MobileKey sk = new MobileKey();
         sk.setMobileId(this.imei);

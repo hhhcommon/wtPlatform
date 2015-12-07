@@ -49,7 +49,7 @@ public class GroupController {
                 return map;
             }
             MobileParam mp=MobileUtils.getMobileParam(m);
-            MobileKey sk=(mp==null?null:mp.getSessionKey());
+            MobileKey sk=(mp==null?null:mp.getMobileKey());
             if (sk==null) {
                 map.put("ReturnType", "0000");
                 map.put("Message", "无法获取设备Id(IMEI)");
@@ -142,7 +142,7 @@ public class GroupController {
                 return map;
             }
             MobileParam mp=MobileUtils.getMobileParam(m);
-            MobileKey sk=(mp==null?null:mp.getSessionKey());
+            MobileKey sk=(mp==null?null:mp.getMobileKey());
             if (sk==null) {
                 map.put("ReturnType", "0000");
                 map.put("Message", "无法获取设备Id(IMEI)");
@@ -212,7 +212,7 @@ public class GroupController {
                 return map;
             }
             MobileParam mp=MobileUtils.getMobileParam(m);
-            MobileKey sk=(mp==null?null:mp.getSessionKey());
+            MobileKey sk=(mp==null?null:mp.getMobileKey());
             //1-处理Session
             if (sk!=null) {
                 map.put("SessionId", sk.getSessionId());

@@ -32,15 +32,16 @@ public class SendMemory {
 
     /**
      * 向某一设移动设备的输出队列中插入
-     * @param mk
-     * @param msg
+     * @param mk 移动设备标识
+     * @param msg 消息数据
      */
     public void addMsg2Queue(MobileKey mk, Message msg) {
         ConcurrentLinkedQueue<Message> mobileQueue=this.msgMap.get(mk);
-        synchronized(this.msgMap) {
+        if (mobileQueue==null) {
             mobileQueue=new ConcurrentLinkedQueue<Message>();
             this.msgMap.put(mk, mobileQueue);
         }
+        mobileQueue.add(msg);
     }
 
     /**

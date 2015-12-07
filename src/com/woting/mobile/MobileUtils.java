@@ -29,7 +29,9 @@ import com.spiritdata.framework.core.cache.SystemCache;
 import com.spiritdata.framework.util.FileNameUtils;
 import com.spiritdata.framework.util.JsonUtils;
 import com.spiritdata.framework.util.StringUtils;
+import com.woting.mobile.model.MobileKey;
 import com.woting.mobile.model.MobileParam;
+import com.woting.mobile.push.model.Message;
 
 /**
  * 移动的公共处理
@@ -208,5 +210,72 @@ public abstract class MobileUtils {
     public static boolean isValidUserId(String userId) {
         if (StringUtils.isNullOrEmptyOrSpace(userId)) return false;
         return userId.length()==12;
+    }
+
+    /**
+     * 从一个Map获得移动的Key
+     * @param m
+     * @return
+     */
+    public static MobileKey getMobileKey(Map<String, Object> m) {
+        if (m==null||m.size()==0) return null;
+        String _temp=""+m.get("IMEI");
+        if (StringUtils.isNullOrEmptyOrSpace(_temp)) return null;
+        MobileKey ret = new MobileKey();
+        ret.setMobileId(_temp);
+        _temp=""+m.get("UserIds");
+        ret.setUserId(_temp);
+        return ret;
+    }
+
+    /**
+     * 从Message的消息发送地址，获得MobileKey
+     * @param m 消息数据
+     * @return 若合规，返回正常的MobileKey，否则返回空
+     */
+    //还有问题，没有做全部的解析，先这样
+    public static MobileKey getMobileKey(Message m) {
+        if (m==null||StringUtils.isNullOrEmptyOrSpace(m.getFromAddr())) return null;
+        String _temp, _temp2;
+        _temp=m.getFromAddr();
+        if (_temp.charAt(0)!='{'||_temp.charAt(_temp.length()-1)!='}') return null;
+        _temp=_temp.substring(1, _temp.length()-1);
+        String[] ss=_temp.split("@@");
+        if (ss.length==1) {//只有IMEI可能
+            _temp=ss[0];
+            if (_temp.charAt(0)=='('&&_temp.charAt(_temp.length()-1)==')') {
+                _temp=_temp.substring(1, _temp.length()-1);
+                ss=_temp.split("||");
+                if (ss.length==1) return null;
+                _temp=ss[0];
+                MobileKey mk = new MobileKey();
+                mk.setMobileId(_temp);
+                mk.setUserId(_temp);
+                return mk;
+            } else return null;
+        } else {
+            _temp=ss[0]; _temp2=ss[1];
+            MobileKey mk = new MobileKey();
+            //获得IMEI
+            if (_temp2.charAt(0)=='('&&_temp2.charAt(_temp2.length()-1)==')') {
+                _temp2=_temp2.substring(1, _temp2.length()-1);
+                ss=_temp2.split("\\u007C\\u007C");
+                if (ss.length==1) return null;
+                _temp2=ss[0];
+                mk.setMobileId(_temp2);
+            } else return null;
+            //获得userId
+            if (_temp.charAt(0)=='('&&_temp.charAt(_temp.length()-1)==')') {
+                _temp=_temp.substring(1, _temp.length()-1);
+                ss=_temp.split("\\u007C\\u007C");
+                if (ss.length==1) {
+                    mk.setUserId(mk.getMobileId());
+                } else {
+                    _temp=ss[0];
+                    mk.setUserId(_temp);
+                }
+            }
+            return mk;
+        }
     }
 }
