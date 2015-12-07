@@ -17,3 +17,6 @@ fs-config
 /WebContent/test.jsp
 /WebContent/test.jsp
 /src/test
+
+/lib/httpmime-4.1.1.jar
+/lib/android.jar
