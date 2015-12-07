@@ -96,7 +96,7 @@ public class ReceiveMemory {
      * 初始化，创建两个主要的对象
      */
     private ReceiveMemory() {
-        this.pureMsgQueue=new ConcurrentLinkedQueue<String>();
-        this.typeMsgMap=new ConcurrentHashMap<String, ConcurrentLinkedQueue<Message>>();
+       this.pureMsgQueue=new ConcurrentLinkedQueue<String>();
+       this.typeMsgMap=new ConcurrentHashMap<String, ConcurrentLinkedQueue<Message>>();
     }
 }
