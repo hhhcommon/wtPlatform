@@ -11,7 +11,7 @@ fs-config
 /WebContent/tempUpload
 /WebContent/asset
 /WebContent/checkCodeImges
-/WebContent/WEB-INF/BasicPlat-0.1.0.6.jar
+/WebContent/WEB-INF/lib
 /WebContent/WEB-INF/classes
 /WebContent/test.html
 /WebContent/test.jsp

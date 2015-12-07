@@ -41,14 +41,14 @@
       <scope>system</scope>
       <systemPath>${build.webProjectDir}/lib/BasicPlat-0.1.0.6.jar</systemPath>
     </dependency>
-    <!-- 引入httpmine
+    <!-- 引入httpmine -->
     <dependency>
       <groupId>org.apache</groupId>
       <artifactId>http</artifactId>
       <version>4.1.1</version>
       <scope>system</scope>
       <systemPath>${build.webProjectDir}/lib/httpmime-4.1.1.jar</systemPath>
-    </dependency> -->
+    </dependency>
     <!-- 引入android包
     <dependency>
       <groupId>android</groupId>
