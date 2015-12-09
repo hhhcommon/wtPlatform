@@ -2,6 +2,7 @@ package com.woting.mobile.push.mem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.woting.mobile.model.MobileKey;
@@ -41,7 +42,8 @@ public class PushMemoryManage {
     }
 
     /**
-     * 清理发送内存结构，把没有数据的设备删除掉
+     * 清理发送内存结构，把没有数据的设备删除掉<br/>
+     * 包括待发送列表和已发送列表
      * ConcurrentLinkedQueue<Message>
      */
     public void clean() {
@@ -49,6 +51,12 @@ public class PushMemoryManage {
             for (MobileKey sKey: this.sm.msgMap.keySet()) {
                 ConcurrentLinkedQueue<Message> mq = this.sm.msgMap.get(sKey);
                 if (mq==null||mq.isEmpty()) this.sm.msgMap.remove(sKey);
+            }
+        }
+        if (this.hasSm.msgMap!=null&&!this.hasSm.msgMap.isEmpty()) {
+            for (MobileKey sKey: this.hasSm.msgMap.keySet()) {
+                SendMessageList sml = this.hasSm.msgMap.get(sKey);
+                if (sml==null||sml.size()==0) this.hasSm.msgMap.remove(sKey);
             }
         }
     }

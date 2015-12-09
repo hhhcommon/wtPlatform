@@ -2,10 +2,6 @@ package com.woting.mobile.push;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -93,11 +89,18 @@ public class PushSocketServer extends Thread {
                 MobileKey mk = MobileUtils.getMobileKey(recMap);
 
                 //返回消息
-                List<Message> msg=pmm.getSendMessages(mk);
+                List<Message> msgList=pmm.getSendMessages(mk);
                 out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
-                //组装返回字符串
-                
-                out.println(JsonUtils.objToJson(msg));
+                String outStr="{\"returnType\":\"-1\"}";
+                //outStr="nothing";
+                if (msgList!=null&&msgList.size()>0) {
+                    outStr="";
+                    for (Message m: msgList) {
+                        outStr+=","+m.getMsgContent();
+                    }
+                    outStr="["+outStr.substring(1)+"]";
+                }
+                out.println(outStr);
             } catch (Exception e) {
                 System.out.println("服务器 run 异常: " + e.getMessage());
             } finally {

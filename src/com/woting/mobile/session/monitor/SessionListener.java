@@ -23,10 +23,11 @@ public class SessionListener extends Thread {
         sl.start();
     }
 
-    //开启会话监控
+    //开启会话清理任务
     private void startMonitor() {
-        Timer mobileSession_Timer = new Timer("MobileSessionTimer", true);
-        CleanTask ct = new CleanTask();
+        System.out.println("启动会话清理任务，任务启动间隔["+msc.getCLEAN_INTERVAL()+"]毫秒");
+        Timer mobileSession_Timer = new Timer("CleanMobileSessionTimer", true);
+        CleanSessionTask ct = new CleanSessionTask();
         mobileSession_Timer.schedule(ct, new Date(), msc.getCLEAN_INTERVAL());
     }
 
