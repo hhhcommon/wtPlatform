@@ -1,4 +1,4 @@
-package com.woting.broadcast.web;
+package com.woting.content.web;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,8 +18,8 @@ import com.woting.mobile.session.model.MobileSession;
 import com.woting.mobile.model.MobileKey;
 
 @Controller
-@RequestMapping(value="/broadcast/")
-public class BroadcastController {
+@RequestMapping(value="/content/")
+public class ContentController {
     private SessionMemoryManage smm=SessionMemoryManage.getInstance();
 
     @RequestMapping(value="mainPage.do")

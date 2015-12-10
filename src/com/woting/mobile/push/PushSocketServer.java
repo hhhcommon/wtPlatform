@@ -9,8 +9,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 import java.util.Map;
-
 import com.spiritdata.framework.util.JsonUtils;
+import com.spiritdata.framework.util.StringUtils;
 import com.woting.mobile.MobileUtils;
 import com.woting.mobile.model.MobileKey;
 import com.woting.mobile.push.mem.PushMemoryManage;
@@ -53,7 +53,7 @@ public class PushSocketServer extends Thread {
 
             pmm.setServerIsRuning(true);
             while (true) {
-                Socket client = serverSocket.accept();
+                Socket client=serverSocket.accept();
                 new HandlerSocket(client);
             }
         } catch(Exception e) {
@@ -69,7 +69,7 @@ public class PushSocketServer extends Thread {
     private static class HandlerSocket implements Runnable {
         private Socket socket=null;
         public HandlerSocket(Socket client) {
-            socket = client;
+            socket=client;
             new Thread(this, "处理Socket["+socket.getInetAddress().getHostAddress()+":"+socket.getLocalPort()+"]").start();
         }
 
@@ -77,29 +77,55 @@ public class PushSocketServer extends Thread {
             BufferedReader in=null;
             PrintWriter out=null;
             try {
+                String msgId=null;
+                boolean isAffirm=false;
+                MobileKey mk=null;
                 //接收到的消息放入队列
-                in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
-                String revMsgStr = in.readLine();
-                pmm.getReceiveMemory().addPureQueue(revMsgStr);
+                in=new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
+                String revMsgStr=in.readLine();
+                if (!StringUtils.isNullOrEmptyOrSpace(revMsgStr)) {
+                    //得到客户端标识
+                    //从Json字符串转换为Map
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> recMap=(Map<String, Object>)JsonUtils.jsonToObj(revMsgStr, Map.class);
+                    if (recMap!=null&&recMap.size()>0) {
+                        recMap.put("_S_STR", revMsgStr);
+                        String __tmp=(String)recMap.get("NeedAffirm");
+                        isAffirm=__tmp==null?false:__tmp.trim().equals("1");
+                        if (isAffirm) msgId=(String)recMap.get("MsgId");
+                        mk=MobileUtils.getMobileKey(recMap);
+                        if (mk!=null) pmm.getReceiveMemory().addPureQueue(recMap);
+                    }
+                }
 
-                //得到客户端标识
-                //从Json字符串转换为Map
-                @SuppressWarnings("unchecked")
-                Map<String, Object> recMap = (Map<String, Object>)JsonUtils.jsonToObj(revMsgStr, Map.class);
-                MobileKey mk = MobileUtils.getMobileKey(recMap);
 
                 //返回消息
-                List<Message> msgList=pmm.getSendMessages(mk);
-                out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
-                String outStr="{\"returnType\":\"-1\"}";
+                List<Message> msgList=null;
+                if (mk!=null) {
+                    msgList=pmm.getSendMessages(mk);
+                }
+                out=new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
+                String outStr="[{\"returnType\":\"-1\"}]";//空，无内容
+                if (isAffirm) {
+                    if (StringUtils.isNullOrEmptyOrSpace(msgId)) {
+                        msgId="{\"returnType\":\"-2\"}";//错误内容
+                    } else {
+                        msgId="{\"returnType\":\"0\",\"\":{\"MsgId\":\""+msgId+"\",\"dealFlag\":\"1\"}}";//消息Id为msgId的消息已经处理，处理环节为：已收到
+                    }
+                }
                 //outStr="nothing";
                 if (msgList!=null&&msgList.size()>0) {
                     outStr="";
                     for (Message m: msgList) {
                         outStr+=","+m.getMsgContent();
                     }
-                    outStr="["+outStr.substring(1)+"]";
+                    outStr=outStr.substring(1);
+                    if (isAffirm) outStr="["+msgId+","+outStr+"]";
+                    else  outStr="["+outStr+"]";
+                } else {
+                    if (isAffirm) outStr="["+msgId+"]";
                 }
+                
                 out.println(outStr);
             } catch (Exception e) {
                 System.out.println("服务器 run 异常: " + e.getMessage());
@@ -110,7 +136,7 @@ public class PushSocketServer extends Thread {
                     if (out!=null)
                         try {out.close();out=null;} catch(Exception e) {out=null;throw e;};
                     if (socket!=null)
-                        try {socket.close();socket=null;} catch (Exception e) {socket = null;throw e;};
+                        try {socket.close();socket=null;} catch (Exception e) {socket=null;throw e;};
                 } catch(Exception e) {
                     e.printStackTrace();
                 }

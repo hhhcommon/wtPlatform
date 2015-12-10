@@ -15,7 +15,7 @@ import java.io.Serializable;
  * 设备标识=>字符串
  * 设备分类=>字符串，目前只有S和M，S表示服务器，M表示移动端
  * 
- * #设备状态=标识::分类
+ * #设备状态=标识||分类
  * 地址={(设备状态)@@(设备标识||设备分类)[地址别名]}
  * #地址别名=地址
  * 地址组=地址,地址,...,地址
@@ -36,7 +36,7 @@ public class Message implements Serializable, Comparable<Message> {
     private String fromAddr; //消息发送地址
     private String proxyAddrs; //消息中转地址，用逗号隔开
     private String toAddr; //消息目标地址
-    private String msgType; //消息类型:0是一般类型；1是回复类型
+    private int msgType; //消息类型:0是一般类型；1是回复类型
     private String msgBizType; //业务消息类型，根据此类型，框架会对消息进行分发，目前只有对讲一个业务类型"INTERCOM"
     private String msgStr; //简易消息内容，应是基础数据类型的字符串，如11.2、我听科技、woting、true、false等，特别的，在msgType==1时，这个属性就是所回复的消息的Id
     private long receiveTime; //消息收到时间
@@ -68,10 +68,10 @@ public class Message implements Serializable, Comparable<Message> {
     public void setToAddr(String toAddr) {
         this.toAddr = toAddr;
     }
-    public String getMsgType() {
+    public int getMsgType() {
         return msgType;
     }
-    public void setMsgType(String msgType) {
+    public void setMsgType(int msgType) {
         this.msgType = msgType;
     }
     public String getMsgBizType() {

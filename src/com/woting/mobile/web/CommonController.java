@@ -297,6 +297,182 @@ public class CommonController {
         }
     }
 
+    @RequestMapping(value="/getHotKeys.do")
+    @ResponseBody
+    public Map<String,Object> getHotKeys(HttpServletRequest request) {
+        Map<String,Object> map=new HashMap<String, Object>();
+        try {
+            //0-处理访问
+            Map<String, Object> m=MobileUtils.getDataFromRequest(request);
+            if (m!=null&&m.size()>0) {
+                MobileParam mp=MobileUtils.getMobileParam(m);
+                MobileKey sk=(mp==null?null:mp.getMobileKey());
+                if (sk!=null){
+                    map.put("SessionId", sk.getSessionId());
+                    MobileSession ms=smm.getSession(sk);
+                    if (ms!=null) ms.access();
+                }
+                //获得语音转文字的结果
+            }
+            map.put("ReturnType", "1001");
+            map.put("KeyList", "逻辑思维,郭德纲,芈月传奇,数学,恐怖主义,鬼吹灯,盗墓笔记,老梁说事");
+            return map;
+        } catch(Exception e) {
+            e.printStackTrace();
+            map.put("ReturnType", "T");
+            map.put("TClass", e.getClass().getName());
+            map.put("Message", e.getMessage());
+            return map;
+        }
+    }
+
+    @RequestMapping(value="/getCatalogInfo.do")
+    @ResponseBody
+    public Map<String,Object> getCatalogInfo(HttpServletRequest request) {
+        Map<String,Object> map=new HashMap<String, Object>();
+        try {
+            //0-处理访问
+            Map<String, Object> m=MobileUtils.getDataFromRequest(request);
+            if (m!=null&&m.size()>0) {
+                MobileParam mp=MobileUtils.getMobileParam(m);
+                MobileKey sk=(mp==null?null:mp.getMobileKey());
+                if (sk!=null){
+                    map.put("SessionId", sk.getSessionId());
+                    MobileSession ms=smm.getSession(sk);
+                    if (ms!=null) ms.access();
+                }
+                //获得语音转文字的结果
+            }
+            map.put("ReturnType", "1001");
+            List<Map<String, String>> demoData = new ArrayList<Map<String, String>>();
+            Map<String, String> item=new HashMap<String, String>();
+            item.put("CatalogType", "001");item.put("CatalogId", "001");item.put("CatalogImg", "img/a.jpg");item.put("CatalogName", "段子笑话");demoData.add(item);
+            item=new HashMap<String, String>();
+            item.put("CatalogType", "001");item.put("CatalogId", "002");item.put("CatalogImg", "img/a.jpg");item.put("CatalogName", "心理推理");demoData.add(item);
+            item=new HashMap<String, String>();
+            item.put("CatalogType", "001");item.put("CatalogId", "003");item.put("CatalogImg", "img/a.jpg");item.put("CatalogName", "生活百科");demoData.add(item);
+            item=new HashMap<String, String>();
+            item.put("CatalogType", "001");item.put("CatalogId", "004");item.put("CatalogImg", "img/a.jpg");item.put("CatalogName", "两性情感");demoData.add(item);
+            item=new HashMap<String, String>();
+            item.put("CatalogType", "001");item.put("CatalogId", "005");item.put("CatalogImg", "img/a.jpg");item.put("CatalogName", "星座风水");demoData.add(item);
+            item=new HashMap<String, String>();
+            item.put("CatalogType", "001");item.put("CatalogId", "005");item.put("CatalogImg", "img/a.jpg");item.put("CatalogName", "商业财经");demoData.add(item);
+            item=new HashMap<String, String>();
+            item.put("CatalogType", "001");item.put("CatalogId", "006");item.put("CatalogImg", "img/a.jpg");item.put("CatalogName", "军事前沿");demoData.add(item);
+            item=new HashMap<String, String>();
+            item.put("CatalogType", "001");item.put("CatalogId", "007");item.put("CatalogImg", "img/a.jpg");item.put("CatalogName", "历史地理");demoData.add(item);
+            item=new HashMap<String, String>();
+            item.put("CatalogType", "001");item.put("CatalogId", "008");item.put("CatalogImg", "img/a.jpg");item.put("CatalogName", "儿童亲子");demoData.add(item);
+            item=new HashMap<String, String>();
+            item.put("CatalogType", "001");item.put("CatalogId", "009");item.put("CatalogImg", "img/a.jpg");item.put("CatalogName", "公开课堂");demoData.add(item);
+            item=new HashMap<String, String>();
+            item.put("CatalogType", "001");item.put("CatalogId", "010");item.put("CatalogImg", "img/a.jpg");item.put("CatalogName", "教育学习");demoData.add(item);
+            item=new HashMap<String, String>();
+            item.put("CatalogType", "001");item.put("CatalogId", "011");item.put("CatalogImg", "img/a.jpg");item.put("CatalogName", "女性时尚");demoData.add(item);
+            item=new HashMap<String, String>();
+            item.put("CatalogType", "001");item.put("CatalogId", "012");item.put("CatalogImg", "img/a.jpg");item.put("CatalogName", "体育世界");demoData.add(item);
+
+            map.put("CatalogTree", demoData);
+            return map;
+        } catch(Exception e) {
+            e.printStackTrace();
+            map.put("ReturnType", "T");
+            map.put("TClass", e.getClass().getName());
+            map.put("Message", e.getMessage());
+            return map;
+        }
+    }
+
+    @RequestMapping(value="/searchByText.do")
+    @ResponseBody
+    public Map<String,Object> searchByText(HttpServletRequest request) {
+        Map<String,Object> map=new HashMap<String, Object>();
+        try {
+            //0-处理访问
+            Map<String, Object> m=MobileUtils.getDataFromRequest(request);
+            if (m!=null&&m.size()>0) {
+                MobileParam mp=MobileUtils.getMobileParam(m);
+                MobileKey sk=(mp==null?null:mp.getMobileKey());
+                if (sk!=null){
+                    map.put("SessionId", sk.getSessionId());
+                    MobileSession ms=smm.getSession(sk);
+                    if (ms!=null) ms.access();
+                }
+                //获得语音转文字的结果
+            }
+            //1-获取地区信息
+            List<Map<String, Object>> rl = new ArrayList<Map<String, Object>>();
+            Map<String, Object> media;
+            media = new HashMap<String, Object>();
+            media.put("MediaType", "RES"); //文件资源
+            media.put("ResType", "mp3");
+            media.put("ResClass", "评书");
+            media.put("ResStyle", "文学名著");
+            media.put("ResActor", "张三");
+            media.put("ResName", "三打白骨精");
+            media.put("ResImg", "images/dft_res.png");
+            media.put("ResURI", "http://www.woting.fm/resource/124osdf3.mp3");
+            media.put("ResTime", "14:35");
+            rl.add(media);
+            media = new HashMap<String, Object>();
+            media.put("MediaType", "RADIO"); //电台
+            media.put("RadioName", "CRI英语漫听电台");
+            media.put("RadioId", "001");
+            media.put("RadioImg", "images/dft_broadcast.png");
+            media.put("RadioURI", "mms://live.cri.cn/english");
+            media.put("CurrentContent", "路况信息");//当前节目
+            rl.add(media);
+            media = new HashMap<String, Object>();
+            media.put("MediaType", "RES"); //文件资源
+            media.put("ResType", "mp3");
+            media.put("ResClass", "歌曲");
+            media.put("ResStyle", "摇滚");
+            media.put("ResActor", "李四");
+            media.put("ResName", "歌曲名称");
+            media.put("ResImg", "images/dft_actor.png");
+            media.put("ResURI", "http://www.woting.fm/resource/124osdf3.mp3");
+            media.put("ResTime", "4:35");
+            rl.add(media);
+            media = new HashMap<String, Object>();
+            media.put("MediaType", "RADIO"); //电台
+            media.put("RadioName", "CRI乡村民谣音乐");
+            media.put("RadioId", "003");
+            media.put("RadioImg", "images/dft_broadcast.png");
+            media.put("RadioURI", "mms://live.cri.cn/country");
+            media.put("CurrentContent", "时政要闻");//当前节目
+            rl.add(media);
+            media = new HashMap<String, Object>();
+            media.put("MediaType", "RES"); //文件资源
+            media.put("ResType", "mp3");
+            media.put("ResClass", "脱口秀");
+            media.put("ResStyle", "文化");
+            media.put("ResSeries", "逻辑思维");
+            media.put("ResActor", "罗某某");
+            media.put("ResName", "逻辑思维001");
+            media.put("ResImg", "images/dft_actor.png");
+            media.put("ResURI", "http://www.woting.fm/resource/124osdf3.mp3");
+            media.put("ResTime", "4:35");
+            rl.add(media);
+            media = new HashMap<String, Object>();
+            media.put("MediaType", "RADIO"); //电台
+            media.put("RadioName", "CRI肯尼亚调频");
+            media.put("RadioId", "002");
+            media.put("RadioImg", "images/dft_broadcast.png");
+            media.put("RadioURI", "mms://livexwb.cri.com.cn/kenya");
+            media.put("CurrentContent", "经典回顾");//当前节目
+            rl.add(media);
+            map.put("ReturnType", "1001");
+            map.put("ResultList", rl);
+            return map;
+        } catch(Exception e) {
+            e.printStackTrace();
+            map.put("ReturnType", "T");
+            map.put("TClass", e.getClass().getName());
+            map.put("Message", e.getMessage());
+            return map;
+        }
+    }
+
     @RequestMapping(value="/searchByVoice.do")
     @ResponseBody
     public Map<String,Object> searchByVoice(HttpServletRequest request) {
@@ -386,7 +562,7 @@ public class CommonController {
             return map;
         }
     }
-
+    
     /**
      * 保存图片
      */

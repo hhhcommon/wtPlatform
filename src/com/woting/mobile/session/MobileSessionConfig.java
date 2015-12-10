@@ -12,7 +12,7 @@ public class MobileSessionConfig {
         return TIMEOUT;
     }
     public void setTIMEOUT(int TIMEOUT) {
-        this.TIMEOUT = TIMEOUT;
+        this.TIMEOUT=TIMEOUT;
     }
 
     //检查清除会话的间隔时间
@@ -22,6 +22,6 @@ public class MobileSessionConfig {
         return CLEAN_INTERVAL;
     }
     public void setCLEAN_INTERVAL(int CLEAN_INTERVAL) {
-        this.CLEAN_INTERVAL = CLEAN_INTERVAL;
+        this.CLEAN_INTERVAL=CLEAN_INTERVAL;
     }
 }

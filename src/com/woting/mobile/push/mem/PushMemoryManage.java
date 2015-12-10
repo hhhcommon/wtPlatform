@@ -2,9 +2,7 @@ package com.woting.mobile.push.mem;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
 import com.woting.mobile.model.MobileKey;
 import com.woting.mobile.push.model.Message;
 import com.woting.mobile.push.model.SendMessageList;
