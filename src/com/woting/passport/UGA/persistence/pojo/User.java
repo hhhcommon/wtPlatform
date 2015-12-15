@@ -16,6 +16,7 @@ public class User extends UgaUser {
     private int userState;//用户状态，0~2
     private String protraitBig;//用户头像大
     private String protraitMini;//用户头像小
+    private String innerPhoneNum; //内部号码
     private String descn; //用户描述
     private Timestamp CTime; //记录创建时间
     private Timestamp lmTime; //最后修改时间:last modify time
@@ -74,6 +75,13 @@ public class User extends UgaUser {
     public void setLmTime(Timestamp lmTime) {
         this.lmTime = lmTime;
     }
+    public String getInnerPhoneNum() {
+        if (StringUtils.isNullOrEmptyOrSpace(this.innerPhoneNum)) return "3000";
+        return innerPhoneNum;
+    }
+    public void setInnerPhoneNum(String innerPhoneNum) {
+        this.innerPhoneNum = innerPhoneNum;
+    }
 
     public Map<String, Object> toHashMap4Mobile() {
         Map<String, Object> retM = new HashMap<String, Object>();
@@ -83,6 +91,8 @@ public class User extends UgaUser {
         if (!StringUtils.isNullOrEmptyOrSpace(this.mainPhoneNum)) retM.put("PhoneNum", this.mainPhoneNum);
         if (!StringUtils.isNullOrEmptyOrSpace(this.mailAddress)) retM.put("Email", this.mailAddress);
         if (!StringUtils.isNullOrEmptyOrSpace(this.descn)) retM.put("Descript", this.descn);
+        //if (!StringUtils.isNullOrEmptyOrSpace(this.innerPhoneNum)) retM.put("InnerPhoneNum", this.innerPhoneNum);
+        retM.put("InnerPhoneNum", this.getInnerPhoneNum());
         return retM;
     }
 }

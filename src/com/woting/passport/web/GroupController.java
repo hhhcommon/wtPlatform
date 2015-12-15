@@ -180,6 +180,8 @@ public class GroupController {
                     gm.put("GroupName", g.getGroupName());
                     gm.put("GroupCount", g.getGroupCount());
                     gm.put("GroupImg", "images/group.png");
+                    gm.put("InnerPhoneNum", g.getInnerPhoneNum());
+                    gm.put("Descripte", g.getDescn());
                     rgl.add(gm);
                 }
                 map.put("ReturnType", "1001");

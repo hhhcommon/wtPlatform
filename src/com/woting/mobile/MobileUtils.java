@@ -223,7 +223,7 @@ public abstract class MobileUtils {
         if (StringUtils.isNullOrEmptyOrSpace(_temp)) return null;
         MobileKey ret = new MobileKey();
         ret.setMobileId(_temp);
-        _temp=""+m.get("UserIds");
+        _temp=""+m.get("UserId");
         ret.setUserId(_temp);
         return ret;
     }

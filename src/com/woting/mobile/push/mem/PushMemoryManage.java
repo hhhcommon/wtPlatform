@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import com.woting.mobile.model.MobileKey;
 import com.woting.mobile.push.model.Message;
 import com.woting.mobile.push.model.SendMessageList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PushMemoryManage {
     //java的占位单例模式===begin
@@ -18,20 +19,21 @@ public class PushMemoryManage {
     }
     //java的占位单例模式===end
 
+    //数据区
     protected ReceiveMemory rm; //接收数据内存结构
     protected SendMemory sm; //发送数据内存结构
     protected SendedMemory hasSm; //发送数据内存结构
+    //数据区
 
-    private boolean serverIsRuning=false; //推送服务是否正常运行
-    public boolean isServerIsRuning() {
-        return this.serverIsRuning;
+    public ReceiveMemory getReceiveMemory() {
+        return this.rm;
     }
-    public void setServerIsRuning(boolean serverIsRuning) {
-        this.serverIsRuning = serverIsRuning;
+    public SendMemory getSendMemory() {
+        return this.sm;
     }
 
     /*
-     * 构造方法，设置消息推送内存结构
+     * 构造方法，初始化消息推送的内存结构
      */
     private PushMemoryManage() {
         rm=ReceiveMemory.getInstance();
@@ -57,14 +59,6 @@ public class PushMemoryManage {
                 if (sml==null||sml.size()==0) this.hasSm.msgMap.remove(sKey);
             }
         }
-    }
-
-    public ReceiveMemory getReceiveMemory() {
-        return this.rm;
-    }
-
-    public SendMemory getSendMemory() {
-        return this.sm;
     }
 
     /**
@@ -93,4 +87,13 @@ public class PushMemoryManage {
         }
         return null;
     }
+
+    private AtomicBoolean serverRuning=new AtomicBoolean(false); //推送服务是否正常运行
+    public boolean isServerRuning() {
+        return this.serverRuning.get();
+    }
+    public void setServerRuning(boolean serverRuning) {
+        this.serverRuning.set(serverRuning);
+    }
+
 }

@@ -85,7 +85,7 @@ public class DealReceivePureQueue extends Thread {
             msg.setFromAddr(__tmp);
             msg.setProxyAddrs("");
             msg.setToAddr("{(intercom)@@(www.woting.fm||S)}");
-            msg.setMsgBizType(m.get("BizTypr")+"");
+            msg.setMsgBizType(m.get("BizType")+"");
             msg.setMsgType(0);
             msg.setReceiveTime(System.currentTimeMillis());
             __tmp=(m.get("Command")+"").trim();

@@ -29,6 +29,7 @@ public class FriendController {
     private FriendService friendService;
     @Resource
     private UserService userService;
+
     private SessionMemoryManage smm=SessionMemoryManage.getInstance();
 
     /**
@@ -87,15 +88,7 @@ public class FriendController {
                     List<Map<String, Object>> rul=new ArrayList<Map<String, Object>>();
                     Map<String, Object> um;
                     for (User u: ul) {
-                        if (!u.getUserId().equals(userId)) {
-                            um=new HashMap<String, Object>();
-                            um.put("UserId", u.getUserId());
-                            um.put("UserName", u.getLoginName());
-                            if (!StringUtils.isNullOrEmptyOrSpace(u.getMailAddress())) um.put("MailAddr", u.getMailAddress());;
-                            if (!StringUtils.isNullOrEmptyOrSpace(u.getMainPhoneNum())) um.put("PhoneNum", u.getMainPhoneNum());;
-                            if (!StringUtils.isNullOrEmptyOrSpace(u.getProtraitMini())) um.put("Portrait", u.getProtraitMini());;
-                            rul.add(um);
-                        }
+                        if (!u.getUserId().equals(userId)) rul.add(u.toHashMap4Mobile());
                     }
                     map.put("ReturnType", "1001");
                     map.put("UserList", rul);
@@ -396,15 +389,8 @@ public class FriendController {
             List<User> ul=friendService.getFriendList(userId);
             if (ul!=null&&ul.size()>0) {
                 List<Map<String, Object>> rul=new ArrayList<Map<String, Object>>();
-                Map<String, Object> um;
                 for (User u: ul) {
-                    if (!u.getUserId().equals(userId)) {
-                        um=new HashMap<String, Object>();
-                        um.put("UserId", u.getUserId());
-                        um.put("UserName", u.getLoginName());
-                        um.put("Portrait", u.getProtraitMini());//还要改变！！！
-                        rul.add(um);
-                    }
+                    if (!u.getUserId().equals(userId)) rul.add(u.toHashMap4Mobile());
                 }
                 map.put("ReturnType", "1001");
                 map.put("UserList", rul);

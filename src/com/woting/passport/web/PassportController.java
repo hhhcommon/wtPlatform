@@ -14,7 +14,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.woting.passport.UGA.service.GroupService;
 import com.woting.passport.UGA.service.UserService;
+import com.woting.passport.friend.service.FriendService;
 import com.spiritdata.framework.util.SequenceUUID;
 import com.spiritdata.framework.util.StringUtils;
 import com.woting.mobile.MobileUtils;
@@ -22,6 +24,7 @@ import com.woting.mobile.model.MobileParam;
 import com.woting.mobile.session.mem.SessionMemoryManage;
 import com.woting.mobile.session.model.MobileSession;
 import com.woting.mobile.model.MobileKey;
+import com.woting.passport.UGA.persistence.pojo.Group;
 import com.woting.passport.UGA.persistence.pojo.User;
 import com.woting.passport.login.persistence.pojo.MobileUsed;
 import com.woting.passport.login.service.MobileUsedService;
@@ -32,7 +35,11 @@ public class PassportController {
     @Resource
     private UserService userService;
     @Resource
+    private GroupService groupService;
+    @Resource
     private MobileUsedService muService;
+    @Resource
+    private FriendService friendService;
 
     private SessionMemoryManage smm=SessionMemoryManage.getInstance();
 
@@ -450,23 +457,27 @@ public class PassportController {
             g.put("GroupId", "334466");
             g.put("GroupName", "用户组3");
             g.put("GroupCount", "3");
+            g.put("InnerPhoneNum", "3000");
             g.put("GroupImg", "images/group.png");
             hl.add(g);
             u = new HashMap<String, Object>();
             u.put("ObjType", "User");
             u.put("UserId", "123456");
             u.put("UserName", "张先生1");
+            g.put("InnerPhoneNum", "1001");
             u.put("Portrait", "images/person.png");
             hl.add(u);
             u = new HashMap<String, Object>();
             u.put("ObjType", "User");
             u.put("UserId", "336655");
             u.put("UserName", "张先生3");
+            g.put("InnerPhoneNum", "1002");
             u.put("Portrait", "images/person.png");
             g = new HashMap<String, Object>();
             g.put("ObjType", "Group");
             g.put("GroupId", "311466");
             g.put("GroupName", "用户组1");
+            g.put("InnerPhoneNum", "3001");
             g.put("GroupCount", "11");
             g.put("GroupImg", "images/group.png");
             hl.add(g);
@@ -477,6 +488,101 @@ public class PassportController {
             if (mp!=null&&!StringUtils.isNullOrEmptyOrSpace(mp.getImei())) {
                 return map;
             }
+            return map;
+        } catch(Exception e) {
+            map.put("ReturnType", "T");
+            map.put("SessionId", e.getMessage());
+            return map;
+        }
+    }
+
+    /**
+     * 得到历史访问列表
+     */
+    @RequestMapping(value="getGroupsAndUsers.do")
+    @ResponseBody
+    public Map<String,Object> getGroupsAndUsers(HttpServletRequest request) {
+        Map<String,Object> map=new HashMap<String, Object>();
+        try {
+            //0-获取参数
+            Map<String, Object> m=MobileUtils.getDataFromRequest(request);
+            if (m==null||m.size()==0) {
+                map.put("ReturnType", "0000");
+                map.put("Message", "无法获取需要的参数");
+                return map;
+            }
+            MobileParam mp=MobileUtils.getMobileParam(m);
+            MobileKey sk=(mp==null?null:mp.getMobileKey());
+            if (sk==null) {
+                map.put("ReturnType", "0000");
+                map.put("Message", "无法获取设备Id(IMEI)");
+                return map;
+            }
+            //1-获取UserId，并处理访问
+            String userId=sk.isUserSession()?sk.getUserId():null;
+            if (sk!=null) {
+                map.put("SessionId", sk.getSessionId());
+                MobileSession ms=smm.getSession(sk);
+                if (ms==null) {
+                    ms=new MobileSession(sk);
+                    smm.addOneSession(ms);
+                } else {
+                    ms.access();
+                    if (userId==null) {
+                        User u=(User)ms.getAttribute("user");
+                        if (u!=null) userId=u.getUserId();
+                    }
+                }
+            }
+            if (StringUtils.isNullOrEmptyOrSpace(userId)) {
+                map.put("ReturnType", "1002");
+                map.put("Message", "无法获取用户Id");
+                return map;
+            }
+
+            //2-得到用户组及好友
+            int size=0;
+            List<Group> gl=groupService.getGroupsByUserId(userId);
+            Map<String, Object> topItem=new HashMap<String, Object>();//一个分类
+            if (gl!=null&&gl.size()>0) size=gl.size();
+            topItem.put("Type", "group");
+            topItem.put("Name", "群组");
+            topItem.put("PageSize", size);
+            topItem.put("AllSize", size);
+            if (size>0) {
+                List<Map<String, Object>> rgl=new ArrayList<Map<String, Object>>();
+                Map<String, Object> gm;
+                for (Group g:gl) {
+                    gm=new HashMap<String, Object>();
+                    gm.put("GroupId", g.getGroupId());
+                    gm.put("GroupName", g.getGroupName());
+                    gm.put("GroupCount", g.getGroupCount());
+                    gm.put("GroupImg", "images/group.png");
+                    gm.put("InnerPhoneNum", g.getInnerPhoneNum());
+                    gm.put("Descripte", g.getDescn());
+                    rgl.add(gm);
+                }
+                topItem.put("Groups", rgl);
+            }
+            map.put("GroupList", topItem);
+
+            size=0;
+            List<User> ul=friendService.getFriendList(userId);
+            if (ul!=null&&ul.size()>0) size=ul.size();
+            topItem=new HashMap<String, Object>();//一个分类
+            topItem.put("Type", "user");
+            topItem.put("Name", "好友");
+            topItem.put("PageSize", size);
+            topItem.put("AllSize", size);
+            if (size>0) {
+                List<Map<String, Object>> rul=new ArrayList<Map<String, Object>>();
+                for (User u: ul) {
+                    if (!u.getUserId().equals(userId)) rul.add(u.toHashMap4Mobile());
+                }
+                topItem.put("Friends", rul);
+            }
+            map.put("FriendList", topItem);
+
             return map;
         } catch(Exception e) {
             map.put("ReturnType", "T");

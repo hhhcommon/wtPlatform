@@ -19,7 +19,7 @@ public class SendMemory {
 
     protected ConcurrentHashMap<MobileKey, ConcurrentLinkedQueue<Message>> msgMap;//将要发送的消息列表
 
-    /**
+    /*
      * 初始化发送消息列表
      */
     private SendMemory() {

@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import com.spiritdata.framework.core.model.BaseObject;
+import com.spiritdata.framework.util.StringUtils;
 
 public class Group extends BaseObject {
     private static final long serialVersionUID = -4171166651180143388L;
@@ -14,6 +15,8 @@ public class Group extends BaseObject {
     private String pId; //上级用户组Id
     private int sort; //用户组排序
     private String createUserId; //创建者id
+    private String innerPhoneNum;  //内部电话号吗
+    private String defaultFreqNum;  //默认频段
     private String adminUserId;  //管理者id
     private String descn; //用户描述
     private Timestamp CTime; //记录创建时间
@@ -95,5 +98,18 @@ public class Group extends BaseObject {
     }
     public void setGroupCount(int groupCount) {
         this.groupCount = groupCount;
+    }
+    public String getDefaultFreqNum() {
+        return defaultFreqNum;
+    }
+    public void setDefaultFreqNum(String defaultFreqNum) {
+        this.defaultFreqNum = defaultFreqNum;
+    }
+    public String getInnerPhoneNum() {
+        if (StringUtils.isNullOrEmptyOrSpace(this.innerPhoneNum)) return "3000";
+        return innerPhoneNum;
+    }
+    public void setInnerPhoneNum(String innerPhoneNum) {
+        this.innerPhoneNum = innerPhoneNum;
     }
 }

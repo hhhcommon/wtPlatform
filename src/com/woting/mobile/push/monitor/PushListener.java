@@ -33,6 +33,7 @@ public class PushListener extends Thread {
             ReceiveMemory.getInstance();
             //启动服务，服务
             PushSocketServer pss = new PushSocketServer(pc);
+            pss.setDaemon(true);
             pss.start();
             //启动读取线程
             int i=0;
