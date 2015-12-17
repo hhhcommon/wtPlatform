@@ -5,9 +5,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.woting.mobile.model.MobileKey;
-import com.woting.mobile.push.SocketHandle;
 import com.woting.mobile.push.model.Message;
+import com.woting.mobile.push.monitor.socket.SocketHandle;
 
+/**
+ * Socket对象缓存内容
+ * @author wanghui
+ */
 public class SocketMemory {
     //java的占位单例模式===begin
     private static class InstanceHolder {

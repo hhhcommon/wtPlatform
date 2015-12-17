@@ -23,6 +23,7 @@ public class PushMemoryManage {
     protected ReceiveMemory rm; //接收数据内存结构
     protected SendMemory sm; //发送数据内存结构
     protected SendedMemory hasSm; //发送数据内存结构
+    protected SocketMemory skm; //发送数据内存结构
     //数据区
 
     public ReceiveMemory getReceiveMemory() {
@@ -39,6 +40,7 @@ public class PushMemoryManage {
         rm=ReceiveMemory.getInstance();
         sm=SendMemory.getInstance();
         hasSm=SendedMemory.getInstance();
+        skm=SocketMemory.getInstance();
     }
 
     /**
@@ -95,5 +97,4 @@ public class PushMemoryManage {
     public void setServerRuning(boolean serverRuning) {
         this.serverRuning.set(serverRuning);
     }
-
 }
